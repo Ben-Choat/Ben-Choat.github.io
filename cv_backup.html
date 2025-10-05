@@ -1,0 +1,92 @@
+
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1 class="figure-content">{% block title %}CV{% endblock %}</h1>
+{% endblock %}
+
+
+{% block content %}
+
+  <div class = "container-fluid">
+    <!-- <div class = "row vh-100"> -->
+      <div class = "col-nav-2">
+          Projects
+          <nav>
+            <ul>
+              <li><a href="#Agrohydrology" onclick="scrollToSection('Agrohydrology')">Agrohydrology</a></li>
+              <li><a href="#section2">Section 2</a></li>
+              <li><a href="#section3">Section 3</a></li>
+            </ul>
+          </nav>
+          <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+          test
+      </div>
+      <div class = "col-scroll-10">
+        
+          <section id="Agrohydrology">
+            <!-- <div class = "row"></div> -->
+            <div class="container-fluid card">
+              <h1 class="mx-auto text-rowcenter">The future of agrohydrology</h1>
+              <p class="mx-auto text-wrap">
+                Here we investigated some stuff you.
+                <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+                This and that and a rattle'a tat
+              </p>
+            </div>
+          <!-- </div> -->
+          </section>
+       
+          <br><br>
+          <section id="section2">
+            <div class="container-fluid card">
+              <h1 class="mx-auto text-center">CloudSeeding</h1>
+              <p class="mx-auto text-wrap">
+                Here we investigated some stuff you.
+                <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+                This and that and a rattle'a tat
+              </p>
+          </section>
+          <br><br>
+          <section id="section3">
+            <!-- Your content for section 3 -->
+          </section>
+
+          <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+          here
+      </div>
+    <!-- </div> -->
+  </div>
+
+
+
+
+
+
+
+{% endblock %}
+
+<!-- <script>
+  // Add smooth scrolling to navbar links within the same column
+  $(document).ready(function () {
+    $('#navbar a').on('click', function (event) {
+      event.preventDefault();
+      var targetSection = $(this).attr('href');
+      scrollSmoothly(targetSection);
+    });
+
+    // Add click event to the scroll-trigger div
+    $('.scroll-trigger').on('click', function () {
+      var targetSection = $(this).attr('data-target-section');
+      scrollSmoothly(targetSection);
+    });
+
+    function scrollSmoothly(targetSection) {
+      var offset = $(targetSection).offset().top;
+
+      $('#main-content').animate({
+        scrollTop: offset
+      }, 500);
+    }
+  });
+</script> -->

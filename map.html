@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1 class="figure-content">{% block title %}Interactive Map{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<!-- <div class="row" style="height: 100vh"> -->
+  <div class="dash-container">
+    <iframe id="dash-map" title='dash_map' src="/map_dash/"></iframe>
+  </div>
+<!-- </div> -->
+
+{% endblock %}
+

@@ -1,0 +1,29 @@
+
+{% extends 'base.html' %}
+
+
+{% block header %}
+  <h1 class="figure-content">{% block title %}Valuation of C-Seq{% endblock %}</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container-fluid col-12">
+  <h2>Be patient, the app may be slow to load.</h2>
+  <p class="mx-auto text-wrap" style="text-align: center">
+    This app is hosted on the free tier of the Posit Shiny Server. An iframe 
+    class is used to present another website via this window. 
+  </p>
+  <div class="shiny-container">
+      <iframe src="https://liminaleng.shinyapps.io/comet_pre_post_app/?_ga=2.159240190.59449386.1652239619-1102973945.1651161214"></iframe>
+  </div>
+</div>
+
+<!-- <div class="container-fluid col-12">
+      <div class="shiny-container">
+          <iframe src="https://liminaleng.shinyapps.io/comet_pre_post_app/?_ga=2.159240190.59449386.1652239619-1102973945.1651161214"></iframe>
+      </div>
+
+</div> -->
+{% endblock %}

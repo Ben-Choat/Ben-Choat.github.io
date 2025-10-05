@@ -1,0 +1,205 @@
+<section id="header">
+  {% extends 'base.html' %}
+</section>
+{% block header %}
+  <h1 class="figure-content">{% block title %}CV{% endblock %}</h1>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- <body> -->
+
+
+<div id="vertical-navbar">
+  <nav>
+    <ul class="flex-column">
+      <h5 >Navigation</h5>
+      <li class="nav-item"><a class="nav-link" href="#header">Top of page</a></li>
+      <li class="nav-item"><a class="nav-link" href="#aghydro">Agrohydrology</a></li>
+      <li class="nav-item"><a class="nav-link" href="#swinfiltration">Stormwater Infiltration</a></li>
+      <li class="nav-item"><a class="nav-link" href="#hydraulic">2D Hydraulic Modeling</a></li>
+      <li class="nav-item"><a class="nav-link" href="#shiny">Valuation of C-Seq</a></li>
+    </ul>
+  </nav>
+</div>
+
+
+
+<!-- <h2>Embedded YouTube Video</h2> -->
+
+    <!-- Replace 'VIDEO_ID' with the actual ID of the YouTube video you want to embed -->
+    <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe> -->
+
+
+
+
+
+<div id="main-content">
+  <div class="col scrollable-column">
+    <div class="card border-primary">
+      <section id="aghydro">
+        <h2>Agrohydrology</h2>
+          <p class="mx-auto text-wrap">
+            The current paradigm tends to view the balance of agricultural productivity
+            and environmental stewardship as divergent concepts where pursuing one excludes the other.
+            This perspective is from a unit-operations perspective that became popular due to rapid gains when implemented.
+            However, enough time has passed that the negative aspects of a unit-operations approach have revealed themselves and 
+            it is now clear that a systems-based approach is superior over medium to long timescales.
+            <br><br>
+            I'm grateful to have contributed to a new paper, <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2022EF003410" target="_blank">
+            Forming the Future of Agrohydrology.</a>
+            The paper is based on one of the more fun conference sessions I've attended - Forming the Future of Agrohydrology 
+            Research at the Frontiers in Hydrology Meeting (2022).
+            <br><br> 
+            In the paper we, as a  multidisciplinary  team, identify key research themes in agrohydrology, conceptualize future 
+            research topics, and estimate timeframes before each topic becomes a limiting factor in advancing water management in 
+            an agricultural context.
+            <br><br>
+            We envision a future where benefits far beyond food production are realized, externalities are minimized, and agriculture 
+            is realized as a net benefit to the environment as well as to humans. 
+            <br><br>
+            <strong>The bulk of the credit for this work is attributed to Sam Smidt and Erin Haacker who led the effort - taking it from initial 
+            conceptualization as a conference session to publication.</strong>
+          </p>
+          <div class="figure-container">
+            <img src="{{ url_for('static', filename='AgroHydro.png') }}" id="AgroHydro" class="figure-cv"
+              onclick="toggleImgSize()">
+          </div>
+          
+        </section>
+      </div>
+    </div>
+
+    
+    <div class="col scrollable-column">
+    <div class="card border-primary">
+      <section id="swinfiltration">
+        <h2>Spatial Arangement of Stormwater Infiltration Study with ParFlow</h2>
+          <p class="mx-auto text-wrap">
+            As stormwater infiltration continues to be pursued to reduce overland flow generated in urban settings, it is necessary
+            to understand the fate of the infiltrated water. Whether we choose to gather water into large or clustered areas and infiltrate it
+            or distribute it to many small areas affects the fate of the infiltrated water.
+            <br><br>
+            My M.S. thesis at CSU focused on understanding how spatial arrangement of infiltrated water impacts the partitioning of subsurface storage
+            between phreatic (saturated) and vadose (unsaturated) zones, <a href="https://ascelibrary.org/doi/abs/10.1061/%28ASCE%29HE.1943-5584.0002005" target="_blank">
+            Spatial Arrangement of Stormwater Infiltration Affects Subsurface Storage and Baseflow</a>, was awarded editors choice
+            in the November, 2020 issue of the Journal of Hydrologic Engineering.
+          </p>
+          <br><br>
+          <h5 style="text-align: center;">Simulated stormater in clustered stormwater control measures.<br>Simulations generated using <a href="https://parflow.org" target="_blank">ParFlow</a>.</h5>
+            <div class="video-container">
+              <!-- Replace 'VIDEO_ID' with the actual ID of the YouTube video you want to embed -->
+              <iframe width="560" height="315" src="https://www.youtube.com/embed/KBHsoUm2T3w?autoplay=1&mute=1&playlist=KBHsoUm2T3w&loop=1" frameborder="0" allowfullscreen></iframe>
+              <iframe width="560" height="315" src="https://www.youtube.com/embed/KZO1asbfDGM?autoplay=1&mute=1&playlist=KZO1asbfDGM&loop=1" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="col scrollable-column">
+      <div class="card border-primary">
+        <section id="hydraulic">
+          <h2>2D-Hydraulic Modeling of the Rossum Drive Reach of the Big Thompson Flood Recovery</h2>
+            <p class="mx-auto text-wrap">
+              In September of 2013 devastating flooding wrecked havoc in Colorado's northern front range. In 2016, I developed a 2D hydraulic model
+              of a portion of the Big Thompson river that had been heavily impacted. Of note, a large pond had been filled with sediment and a local 
+              pumpkin patch and golf course were flooded.
+              <br><br>
+              This modeling work explored three scenarios; 1. As-is streamflow response, 2. Adding a single auxillary channgel, and 3. Adding two auxillary channels.
+              I did not have streamflow to calibrate to, so instead, used observations from an engineer with the City of Loveland. This way, we 
+              were able to calibrate based on observed inundation at a known flows.
+              Velocity and shear stress from the model were used by a colleague to design bank stabilization using the willow-post method.
+              Our senior design team was awarded <a href="https://www.engr.colostate.edu/ce/undergraduate-latest-news/#:~:text=1st%20PLACE,Platt%2C%20Samual%20Parker" target="_blank">
+              first place at CSU's Senior Design Showcase</a> in Spring 2016.
+            </p>
+            <br><br>
+            <h5 style="text-align: center;">Model results at various discharges. As-Is, 1 Channel, 2 Channels, with overview, and zoom on channels.<br>Simulations generated using 
+              <a href="https://www.usbr.gov/tsc/techreferences/computer%20software/models/srh2d/index.html" target="_blank">SRH-2D</a> with 
+              <a href="https://www.aquaveo.com/software/sms-srh" target="_blank">AQUAVEO's Surface-Water Modeling System</a>.</h5>
+              <p style="text-align: center;">
+                I recommend playing at 2X, or skipping ahead manually. This video is long. These timestamps are not linked, 
+                but can guide you to a specific portion of the video.
+                <br>0:00: As-Is Overhead - 0:59: Alt1 Overhead - 2:06 Alt2 Overhead - 3:59: Alt2 Zoomed - 5:04: Channel 
+                1 Detailed - 5:30: Channel 2 Detailed
+              </p>
+              <div class="video-container">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/Qtvvd8UbP6A?autoplay=1&mute=1&playlist=Qtvvd8UbP6A&loop=1" frameborder="0" allowfullscreen></iframe>
+              </div>
+          </section>
+        </div>
+      </div>
+
+      <div class="col scrollable-column">
+        <div class="card border-primary">
+          <section id="shiny">
+            <h2>Valuation of Carbon Sequestration from NRCS Conservation Practices Using R-Shiny</h2>
+              <p class="mx-auto text-wrap">
+                As part of my NSF-Funded Food-Energy-Water fellowship, I participated in a project 
+                with the Colorado Water Conservation Board to
+                better understand the potential benefits related to carbon sequestration in the
+                 instance of irrigated agriculture being
+                converted to more natural vegetative cover in the Front Range of Colorado.
+                <br><br>
+                The application is hosted on the free tier of Posit's Shiny Server. Because it is on the free
+                tier, it runs a bit slow,
+                and can take a moment to load. The app is also not optimized for mobile (or tiny screen) use, so 
+                I do not suspect it will function as expeted if used on your phone.
+              </p>
+
+              <img class="cvimg" src="{{ url_for('static', filename='CSeqRslts.png') }}">
+              
+              <h5 style="text-align: center;"><a href="/shiny">Visit Shiny App</a></h5>
+              
+            </section>
+          </div>
+        </div>
+
+
+
+      <!-- <iframe src="https://connect.my_domain.com/my_app" width: 100%; height: 500px;></iframe> -->
+</div>
+
+
+<script>
+  // Get the image element
+  var img = document.getElementById("AgroHydro");
+
+  // Record the original width on page load
+  var originalWidth = img.offsetWidth;
+
+  // Function to toggle image size
+  function toggleImgSize() {
+    var currentWidth = img.style.width;
+
+    // Check if the image is currently enlarged, then make it smaller
+    if (currentWidth === "60%") {
+      // Reset the image to its original width
+      img.style.width = originalWidth + "px";
+    } else {
+      // If the image is not enlarged, make it larger
+      img.style.width = "60%";
+    }
+
+    // Set common styling for both cases
+    img.style.height = "auto";
+    img.style.transition = "width 0.5s ease";
+  }
+</script>
+
+
+<!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+{% endblock %}

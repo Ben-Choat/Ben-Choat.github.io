@@ -1,0 +1,86 @@
+
+
+<section id="header">
+    {% extends 'base.html' %}
+  </section>
+  {% block header %}
+    <h1 class="figure-content">{% block title %}Liminal Engineering{% endblock %}</h1>
+  {% endblock %}
+
+{% block content %}
+<div id="vertical-navbar">
+	<nav>
+	  <ul class="flex-column">
+		<h5> Navigation </h5>
+		<li class="nav-item"><a class="nav-link" href="#header">Top of page</a></li>
+		<li class="nav-item"><a class="nav-link" href="#WhatIsLim">Liminal Engineering?</a></li>
+		<li class="nav-item"><a class="nav-link" href="#AboutWebsite">Why this website?</a></li>
+	  </ul>
+	</nav>
+</div>
+
+
+<!-- <div class="content container col-10 offset-1 text-start"> -->
+<div id="main-content">
+	<div class="col scrollable-column">
+		<div class="card border-primary">
+			<section id="WhatIsLim">
+				<!-- <div class="row"> -->
+				<!-- <div class="col-10 offset-1 text-start"> -->
+				<!-- <h1 class="mx-auto text-center">Liminal Engineering</h1> -->
+				<!-- <h2 class="mx-auto">Your Centered H2 Header</h2> -->
+				<br>
+				<h2>What is Liminal Engineering?</h2>
+				<p class="mx-auto text-wrap">Hello! I am Ben Choat. I use Liminal Engineering for all my 
+					indepedent adventures into engineering, water resources, data science, and other fun 
+					studies and projects. Liminal Engineering is engineering in the transitional spaces 
+					between systems. Transitional spaces can refer to transitions through time and/or in space. 
+					<br>
+					<br>
+					I am a Water Resources Scientist and Engineer in Training. I have expertise in 
+					surface-subsurface interactions and anthropogenic alterations to the hydrologic cycle. 
+					My interests range from precipitation formation in the atmosphere to subsurface flow - 
+					to water at your tap - to the natural and societal systems that are affected by the 
+					flow of water. 
+					<br>
+					<br>
+					My experience includes finite element hydraulic modeling, finite difference surface-subsurface 
+					modeling, statistical modeling, machine learning, systems analysis, stakeholder engagement,
+					and more. My curiosity and desire to provide a benefit to society drive me to continuously 
+					expand my skill set and experience. I’m highly skilled, capable, and eager to perform work 
+					that shifts society towards sustainable management of its resources for the benefit of humans 
+					and nature. 
+					<br>
+					<br>
+					Ultimately, I believe by moving towards management of land, water, food, and energy within 
+					the context of nature we can build healthy and happy societies and environments.
+				</p>
+			</section>
+			</div>
+		</div>
+		<div class="col scrollable-column">
+			<div class="card border-primary">
+			<section id="AboutWebsite">
+				<br>
+				<h2>What about this website?</h2>
+				<p class="mx-auto text-wrap">I wanted to grow my web-app skills for fun and for
+					professional development. So, I decided to learn Ploty, Plotly Dash, and Flask.
+					Learning Flask led me to playing with HTML and CSS and dabbling in JavaScript 
+					(Thank you CGPT!). 
+					<br>
+					<br>
+					This website was created to serve two purposes:
+					<br>
+					1. Act as my personal website,
+					<br>
+					2. Provide a practical project to help me learn Flask, HTML, and CSS. 
+					
+				</p>
+			</section>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+<!-- <div class="col scrollable-column">
+	<div class="card border-primary"> -->
