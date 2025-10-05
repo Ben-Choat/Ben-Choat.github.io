@@ -1,0 +1,454 @@
+/* USED */
+
+[data-bs-theme=dark] {
+  color-scheme: dark;
+  --bs-body-color: #eceeef;
+  --bs-body-color-rgb: 236, 238, 239;
+  --bs-body-bg: #212529;
+  --bs-body-bg-rgb: 33, 37, 41;
+  --bs-emphasis-color: #fff;
+  /* --bs-emphasis-color-rgb: 255, 255, 255; */
+  --bs-emphasis-color-rgb: 0, 255, 0;
+  /* --bs-emphasis-color-rgb: 173, 216, 230; */
+  --bs-secondary-color: rgba(236, 238, 239, 0.75);
+  --bs-secondary-color-rgb: 236, 238, 239;
+  --bs-secondary-bg: #343a40;
+  --bs-secondary-bg-rgb: 52, 58, 64;
+  --bs-tertiary-color: rgba(236, 238, 239, 0.5);
+  --bs-tertiary-color-rgb: 236, 238, 239;
+  --bs-tertiary-bg: #2b3035;
+  --bs-tertiary-bg-rgb: 43, 48, 53;
+  --bs-primary-text-emphasis: #aedace;
+  --bs-secondary-text-emphasis: #f8c0c2;
+  --bs-success-text-emphasis: #9ae0c4;
+  --bs-info-text-emphasis: #a7dbe6;
+  --bs-warning-text-emphasis: #ffe2a4;
+  --bs-danger-text-emphasis: #ffae97;
+  --bs-light-text-emphasis: #f8f9fa;
+  --bs-dark-text-emphasis: #eceeef;
+  --bs-primary-bg-subtle: #182723;
+  --bs-secondary-bg-subtle: #311e1f;
+  --bs-success-bg-subtle: #11291f;
+  --bs-info-bg-subtle: #16272b;
+  --bs-warning-bg-subtle: #332915;
+  --bs-danger-bg-subtle: #331810;
+  --bs-light-bg-subtle: #343a40;
+  --bs-dark-bg-subtle: #1a1d20;
+  --bs-primary-border-subtle: #487468;
+  --bs-secondary-border-subtle: #925a5c;
+  --bs-success-border-subtle: #347a5e;
+  --bs-info-border-subtle: #417580;
+  --bs-warning-border-subtle: #997c3e;
+  --bs-danger-border-subtle: #994831;
+  --bs-light-border-subtle: #5a5a5a;
+  --bs-dark-border-subtle: #343a40;
+  --bs-heading-color: inherit;
+  --bs-link-color: #aedace;
+  --bs-link-hover-color: #bee1d8;
+  --bs-link-color-rgb: 174, 218, 206;
+  --bs-link-hover-color-rgb: 190, 225, 216;
+  --bs-code-color: #f18bba;
+  --bs-highlight-color: #eceeef;
+  --bs-highlight-bg: #665229;
+  --bs-border-color: #5a5a5a;
+  --bs-border-color-translucent: rgba(255, 255, 255, 0.15);
+  --bs-form-valid-color: #9ae0c4;
+  --bs-form-valid-border-color: #9ae0c4;
+  --bs-form-invalid-color: #ffae97;
+  --bs-form-invalid-border-color: #ffae97;
+  --compliment-color-rgb: 0,191,255;
+  /* 173, 216, 230; */
+}
+
+.submit-button {
+  padding: 1%;
+}
+
+.nav-link.active {
+  background-color: rgba(var(--compliment-color-rgb), 0.03); 
+  /* var(--bs-tertiary-color); */
+  /* display: block; */
+  border-bottom: 1px solid var(--bs-primary);
+  border-top: 1px solid var(--bs-primary);
+  height: 100%;
+  width: auto;
+  /* position: absolute; */
+  position: relative;
+  /* top: -50px; */
+  /* bottom: -50px; */
+}
+ 
+.navbar-nav {
+  margin: 0 auto;
+} 
+
+.navbar-toggler {
+  background-color: var(--compliment-color-rgb)
+}
+.bg-primary-custom {
+  --bs-bg-opacity: 0.1;
+  background-color: rgba(var(--compliment-color-rgb), var(--bs-bg-opacity)) !important;
+}
+
+.btn-custom {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: rgba(var(--compliment-color-rgb), 0.03);
+  --bs-btn-border-color: #78c2ad;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #66a593;
+  --bs-btn-hover-border-color: #609b8a;
+  --bs-btn-focus-shadow-rgb: 140, 203, 185;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #609b8a;
+  --bs-btn-active-border-color: #5a9282;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #78c2ad;
+  --bs-btn-disabled-border-color: #78c2ad;
+}
+
+/* .dropdown-menu {
+  --bs-bg-opacity: 0.7;
+  background-color:rgba(var(--compliment-color-rgb), var(--bs-bg-opacity));
+} */
+
+.dropdown-item {
+  background-color: rgba(var(--compliment-color-rgb), var(--bs-bg-opacity));
+} 
+
+.dropdown-item.active, .dropdown-item:active {
+  /* color: var(--bs-dropdown-link-active-color); */
+  text-decoration: none;
+  background-color: rgba(var(--compliment-color-rgb), 0.03); 
+  /* background-color: transparent; */
+  border-bottom: 1px solid var(--bs-primary);
+  border-top: 1px solid var(--bs-primary);
+  height: 100%;
+  width: auto;
+  /* position: absolute; */
+  position: relative;
+}
+
+h2, .h2 {
+  font-size: calc(1.325rem + 0.9vw);
+  text-align: center;
+}
+
+.mx-auto {
+  margin-right: 4vh !important; /*auto*/
+  margin-left: 4vh !important; /*auto*/
+}
+
+.border-primary {
+  --bs-border-opacity: 1;
+  border-color:  rgba(var(--bs-emphasis-color-rgb), 0.5);  /* rgba(var(--bs-primary-rgb), var(--bs-border-opacity)) !important;*/
+}
+
+#vertical-navbar {
+  position: fixed;
+  top: 45vh; /*39vh*/
+  left: 0;
+  height: 40%; /* 40 vh */
+  /* flex: 0 0 calc(15vw*2); */
+  width: 15%; /*15vw; 15%; */
+  /* z-index: 0; */
+  /* background-color: rgba(var(--bs-emphasis-color-rgb), 0.05);  */
+  background-color: rgba(var(--compliment-color-rgb), 0.05); 
+  border-right: 0.1vw solid rgba(var(--bs-emphasis-color-rgb), 0.5);
+  border-top: 0.1vw solid rgba(var(--bs-emphasis-color-rgb), 0.5);
+  border-bottom: 0.1vw solid rgba(var(--bs-emphasis-color-rgb), 0.5);
+  margin-left: 0;
+  padding-left: 0vh;
+  padding-top: 0vh;
+  align-items: left;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+/* Custom styles for the main content area */
+#main-content {
+  margin-left: 15%; /* 200px */
+  padding: 20px; /* 20px */
+}
+
+/* remove left padding and marings for h5 and li in vertical-navbar */
+#vertical-navbar h5,
+#vertical-navbar li {
+  margin-left: 0;
+  padding-left: 0;
+}
+#vertical-navbar h5 {
+  margin: 0;
+  padding: 0;
+}
+/* Media query for smaller screens */
+@media (max-width: 600px) {
+  #vertical-navbar {
+    width: 0%; /* Set a different width for smaller screens */
+  }
+  #main-content {
+    margin-left: 0%
+  }
+}
+
+/* Media query for smaller screens */
+@media (max-height: 450px) {
+  #vertical-navbar {
+    /* top: 25vw; Set a different width for smaller screens */
+    /* min-width: 15vw; Set a different minimum width for smaller screens*/
+    width: 0%;
+  }
+  #main-content {
+    margin-left: 0%
+  }
+}
+
+
+
+
+/* Set a fixed height for the column containing sections */
+.scrollable-column {
+  height: auto; /* Adjust the height as needed 80 vh*/
+  width: 100%;
+  overflow-y: auto; /* Enable vertical scrollbar for the column */
+  padding-bottom: 5vh;
+}
+
+.flex-column {
+  flex-direction: column !important;
+}
+
+.figure-logo {
+    /* margin-bottom: 0.01rem;0.5rem; */
+    /* padding-right: 1vw; */
+    line-height: 1;
+    width: 40px; /* Set the desired width */
+    height: auto; /* Maintain aspect ratio */
+  }
+  
+.figure-logo-container {
+    display: flex;
+    align-items: center;
+}
+
+/* Add some CSS to style the videos and container */
+.video-container {
+  display: flex;
+  justify-content: center;
+  margin: 10px auto;
+  max-width: 100%;
+}
+
+/* .video-container iframe { */
+  /* width: 35%; Adjust the width as needed */
+  /* box-sizing: border-box; */
+  /* margin-bottom: 5px; */
+/* } */
+
+.shiny-container {
+  display: flex;
+  width: 100%;
+  height: 120vh;
+  justify-content: center;
+  align-items: center; /* Center vertically */
+  margin: 1% auto;
+  max-width: 100%;
+  overflow-y: auto;
+}
+
+.shiny-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  overflow-y: auto;
+  margin: 1%;
+}
+
+.dash-container {
+  display: flex;
+  width: 100%;
+  height: 120vh;
+  justify-content: center;
+  align-items: center;
+  margin: 1% auto;
+  max-width: 100%;
+  overflow-y: auto;
+}
+
+.dash-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  overflow-y: auto;
+  margin: 1%;
+}
+
+.doc-container {
+  display: flex;
+  /* width: 100%; */
+  height: 100%;
+  /* border: none; */
+  /* overflow-y: auto; */
+  /* margin: 1% auto; */
+  justify-content: center; /* Center horizontally */
+  /* align-content: center; */
+  /* align vertically */
+  align-items: center; 
+}
+
+.doc-container iframe {
+  width: 80%;
+  height: 100%;
+  border: none;
+  overflow-y: auto;
+  /* margin: 1% auto; */
+}
+
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrollbar */
+}
+
+.figure-background {
+  background-image: url('RetentionPond.jpg');
+  background-size: cover;
+  background-position: center;
+  width: 100vw; /* Set the width to the viewport width */
+  height: 25vh; /* Set the height to the viewport height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 3;
+  border-bottom: 3px solid rgba(var(--bs-emphasis-color-rgb), 1);
+}
+
+.figure-caption {
+  font-size: 0.875em;
+  color: var(--bs-secondary-color);
+}
+
+
+/* .navbar {
+  background-color: rgba(var(--compliment-color-rgb), 0.65);
+} */
+.figure-content {
+  position: relative;
+  z-index: 2;
+  color: black;
+  font-size: 7vw;
+  text-align: center;
+  margin-bottom: 0;
+  /* padding: 20px; */
+  -webkit-text-stroke: 0.2vw rgba(var(--bs-emphasis-color-rgb), 0.5); /* Set the text stroke with a specific color */
+  /* text-stroke: 1px yourColor;  Standard property for text-stroke */
+  font-family: Arial;
+}
+
+.figure-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.figure-cv {
+  /* background-size: cover; */
+  /* background-position: center; */
+  width: auto; /* Set the width to the viewport width */
+  height: 50vh; /* Set the height to the viewport height */
+  display: flex;
+  position: relative;
+  /* z-index: 3; */
+  padding-bottom: 5vh;
+
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ##################### */
+
+
+/* create columns side by side that scroll independently */
+
+.col-nav-2 {
+  position: fixed;
+  /* flex: 0 0 auto; */
+  top: 30vh;
+  left: 0;
+  width: 16.66666667%;
+  height: 100vh;
+  background-color:  rgba(255, 255, 255, 0.1);
+  border-right: 0.1vw solid rgba(var(--bs-emphasis-color-rgb), 0.5);
+  overflow-y: scroll;
+  padding-top: 10vh;
+}
+
+
+.col-scroll-10 {
+  /* flex: 0 0 auto; */
+  width: 83.3333333333333%;
+  height: 100vh;
+  padding-top: 5vh;
+  /* border-right: 0.1vw solid rgba(var(--bs-emphasis-color-rgb), 0.5); */
+  /* overflow-y: scroll; */
+  overflow-y: auto;
+  margin-left: 16.66666667%;
+}
+
+.cvimg {
+  /* @extend /border-primary; */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 70vw;
+  height: auto;
+  border: solid;
+  --bs-border-opacity: 1;
+  border-color:  rgba(var(--bs-emphasis-color-rgb), 0.5);  /* rgba(var(--bs-primary-rgb), var(--bs-border-opacity)) !important;*/
+}
+
+
+/*Set up the columns with a 100% height, body color and overflow scroll*/
+
+.left{
+  background-color: red;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.right{
+  background-color: blue;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.mid{
+  background-color: green;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+/* ############################################  */
+
+
+.column {
+  width: 200px; /* Set the width of your column */
+  border-right: 1px solid #000; /* Add a 1px solid black border to the right side of the column */
+  padding: 10px; /* Add padding to create some space between the content and the border */
+  overflow-y: scroll; /* Always show a vertical scrollbar */
+  /* You can also add other styling as needed */
+}
+
+
+
+
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+}
