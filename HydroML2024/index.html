@@ -1,27 +1,14 @@
 
 <section id="header">
-    {% extends 'base.html' %}
 </section>
-{% block header %}
-    <h1 class="figure-content">{% block title %}Poster-HydroML 2024{% endblock %}</h1>
-{% endblock %}
+<h1 class="figure-content">Poster-HydroML 2024</h1>
 
 
-{% block content %}
-<!-- <div class="container-fluid col-12">
-    <h2>
-        <a href="https://1drv.ms/w/s!Aq4MLIcfy9hJgp9TTnAPBBWE9Dr2Sw?e=Cl6uI2" target="_blank">
-            Click here to access downloadable version
-        </a>
-    </h2>
-</div> -->
+<div id="navbar"></div>
 <div style="text-align: center;">
   <h5>I presented this poster at HydroML 2024. It is a spin-off of the last chapter of my dissertation which we are still working on publishing.</h5>
 </div>
 <div class="iframe-container col-10 offset-1">
-    <!-- <iframe src="https://onedrive.live.com/embed?resid=49D8CB1F872C0CAE%2168777&authkey=!AHb85Zml5sTXENg&em=2" width="100%"></iframe> -->
-    <img src="{{ url_for('static', filename='HydroML2024_BChoat.png') }}" alt="Poster" class="img-fluid" style="width: 100%">
-    <!-- width="476" height="288" frameborder="0" scrolling="no"></iframe> -->
+   <img src="{{ url_for('static', filename='HydroML2024_BChoat.png') }}" alt="Poster" class="img-fluid" style="width: 100%">
 </div>
 
-{% endblock %}
