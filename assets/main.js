@@ -14,15 +14,16 @@ function loadHTML(id, file, callback) {
 }
 
 function highlightActiveLink() {
-  const currentURL = location.href;
+  const currentPath = window.location.pathname; // e.g., /cv/ or /HydroML2024/
+  
   document.querySelectorAll("nav a").forEach(link => {
-    const linkURL = new URL(link.href, location.origin).href;
+    const linkPath = new URL(link.href, location.origin).pathname;
 
-    // Handle / vs /index.html
-    if (linkURL === currentURL || linkURL + "index.html" === currentURL || linkURL === currentURL + "index.html") {
+    // mark active if current path starts with link path
+    if (currentPath === linkPath || currentPath.startsWith(linkPath)) {
       link.classList.add("active");
 
-      // Also highlight parent dropdown toggle if inside a dropdown
+      // also mark parent dropdown toggle if inside dropdown
       const parentDropdown = link.closest(".dropdown");
       if (parentDropdown) {
         const toggle = parentDropdown.querySelector(".nav-link.dropdown-toggle");
@@ -31,3 +32,4 @@ function highlightActiveLink() {
     }
   });
 }
+
