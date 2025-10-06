@@ -1,20 +1,28 @@
 window.addEventListener("DOMContentLoaded", () => {
-  loadHTML("navbar", "/components/navbar.html", highlightActiveLink);
-  loadHTML("footer", "/components/footer.html");
+  loadComponent("navbar", "/components/navbar.html").then(() => {
+    const links = document.querySelectorAll("nav a");
+    links.forEach(link => {
+      if (link.href === window.location.href) {
+        link.classList.add("active");
+      }
+    });
+  });
+  loadComponent("footer", "/components/footer.html");
 });
 
-function loadHTML(id, file, callback) {
-  fetch(file)
-    .then(res => res.text())
-    .then(html => {
-      document.getElementById(id).innerHTML = html;
-      if (callback) callback();
-    })
-    .catch(err => console.error(`Error loading ${file}:`, err));
+async function loadComponent(id, file) {
+  const element = document.getElementById(id);
+  if (element) {
+    try {
+      // Always resolve from the site root
+      const base = window.location.origin;
+      const response = await fetch(`${base}${file}`);
+      if (!response.ok) throw new Error(`Failed to fetch ${file}`);
+      const html = await response.text();
+      element.innerHTML = html;
+    } catch (err) {
+      console.error(err);
+    }
+  }
 }
 
-function highlightActiveLink() {
-  document.querySelectorAll("nav a").forEach(link => {
-    if (link.href === location.href) link.classList.add("active");
-  });
-}
