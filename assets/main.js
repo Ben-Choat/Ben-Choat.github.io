@@ -1,5 +1,5 @@
 window.addEventListener("DOMContentLoaded", () => {
-  loadComponent("navbar", "/components/navbar.html").then(() => {
+  loadComponent("navbar", "Ben-Choat.github.io/components/navbar.html").then(() => {
     const links = document.querySelectorAll("nav a");
     links.forEach(link => {
       if (link.href === window.location.href) {
