@@ -1,8 +1,8 @@
 window.addEventListener("DOMContentLoaded", () => {
   // Try relative component paths first so this works when the site is served under
   // a subpath or previewed from file://. If that fails, fall back to absolute root path.
-  loadHTML("navbar", "components/navbar.html", highlightActiveLink);
-  loadHTML("footer", "components/footer.html");
+  loadHTML("navbar", "/components/navbar.html", highlightActiveLink);
+  loadHTML("footer", "/components/footer.html");
 });
 
 function loadHTML(id, file, callback) {

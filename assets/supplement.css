@@ -210,7 +210,70 @@ h2, .h2 {
 }
 
 
+.img-domain{
+  /* max-width: 100%; */
+  width: 20vw;
+  min-width: 100px;
+  height: auto;
+  border: 3px solid rgba(var(--bs-emphasis-color-rgb), 0.5);
+  /* var(--bs-primary); */
+}
 
+.img-domain.expandable-hover {
+  transition: transform 0.3s ease; /* Smooth transition */
+}
+
+.img-domain.expandable-hover:hover {
+  transform: scale(2); /* Increase size on hover */
+}
+
+
+.cvimg {
+  /* @extend /border-primary; */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 30vw;
+  min-width: 100px;
+  height: auto;
+  border: 3px solid rgba(var(--bs-emphasis-color-rgb), 0.5);
+  z-index: 1e7;
+  /* --bs-border-opacity: 1; */
+  /* border-color:  rgba(var(--bs-emphasis-color-rgb), 0.5); */
+}
+
+.cvimg.expandable-hover {
+  transition: transform 0.3s ease; /* Smooth transition */
+  z-index: 1e7;
+}
+
+.cvimg.expandable-hover:hover {
+  transform: scale(2); /* Increase size on hover */
+  z-index: 1e7;
+}
+
+
+.hydroml_poster {
+  /* @extend /border-primary; */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50vw;
+  min-width: 100px;
+  height: auto;
+  border: 3px solid rgba(var(--bs-emphasis-color-rgb), 0.5);
+  z-index: 3;
+  /* --bs-border-opacity: 1; */
+  /* border-color:  rgba(var(--bs-emphasis-color-rgb), 0.5); */
+}
+
+.hydroml_poster.expandable-hover {
+  transition: transform 0.3s ease; /* Smooth transition */
+}
+
+.hydroml_poster.expandable-hover:hover {
+  transform: scale(1.9); /* Increase size on hover */
+}
 
 /* Set a fixed height for the column containing sections */
 .scrollable-column {
@@ -404,20 +467,6 @@ html {
   overflow-y: auto;
   margin-left: 16.66666667%;
 }
-
-.cvimg {
-  /* @extend /border-primary; */
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 70vw;
-  height: auto;
-  border: solid;
-  --bs-border-opacity: 1;
-  border-color:  rgba(var(--bs-emphasis-color-rgb), 0.5);  /* rgba(var(--bs-primary-rgb), var(--bs-border-opacity)) !important;*/
-}
-
-
 /*Set up the columns with a 100% height, body color and overflow scroll*/
 
 .left{
