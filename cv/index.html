@@ -30,9 +30,6 @@
   </nav>
 </div>
 
-
-
-
 <div id="main-content">
   <div class="col scrollable-column">
     <div class="card border-primary">
@@ -154,40 +151,10 @@
             </section>
           </div>
         </div>
-
-
-
-      <!-- <iframe src="https://connect.my_domain.com/my_app" width: 100%; height: 500px;></iframe> -->
 </div>
 
 
 <div id="footer"></div>
-
-<script>
-  // Get the image element
-  var img = document.getElementById("AgroHydro");
-
-  // Record the original width on page load
-  var originalWidth = img.offsetWidth;
-
-  // Function to toggle image size
-  function toggleImgSize() {
-    var currentWidth = img.style.width;
-
-    // Check if the image is currently enlarged, then make it smaller
-    if (currentWidth === "60%") {
-      // Reset the image to its original width
-      img.style.width = originalWidth + "px";
-    } else {
-      // If the image is not enlarged, make it larger
-      img.style.width = "60%";
-    }
-
-    // Set common styling for both cases
-    img.style.height = "auto";
-    img.style.transition = "width 0.5s ease";
-  }
-</script>
 
 
 <script src="/assets/main.js" defer></script>
