@@ -406,7 +406,7 @@ body {
   justify-content: center;
   width: 90vw;
   height: auto;
-  background-color: rgba(var(--bs-emphasis-color-rgb), 0.05);
+  /* background-color: rgba(var(--bs-emphasis-color-rgb), 0.05); */
   padding: 0rem;
   padding-bottom: 0.25rem;
   padding-top: 0.25rem;
