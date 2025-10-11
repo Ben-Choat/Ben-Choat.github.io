@@ -291,7 +291,7 @@ h2, .h2 {
     /* margin-bottom: 0.01rem;0.5rem; */
     /* padding-right: 1vw; */
     line-height: 1;
-    width: 40px; /* Set the desired width */
+    width: 4vw; /* Set the desired width */
     height: auto; /* Maintain aspect ratio */
   }
   
