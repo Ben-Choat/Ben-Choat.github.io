@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1 class="figure-content">{% block title %}Photos{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .card_photo {
+        width: 98vw; /* Full viewport width */
+        height: 33vh;
+        margin: 10px;
+        overflow: hidden; /* Hide any overflow beyond the container */
+        border: solid;
+        padding: 10px 10px 0 0; /* Top and bottom padding */
+        display: flex;
+        overflow-x: auto;
+        /* justify-content: center; */
+        align-items: center;
+        /* -ms-overflow-style: none;  IE and Edge */
+        scrollbar-width: thin;  /* Firefox */
+        scrollbar-color: cyan green;
+        border-radius: 2%;
+    }
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    /* .card_photo::-webkit-scrollbar {
+        display: none;
+    } */
+        
+    .item {
+        display: inline-block; /* Ensure items are aligned horizontally */
+        /* padding: 10px; */
+        margin: 10px;
+        border: 1px solid cyan;
+        height: 100%; /* Use full container height */
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+    
+    .photo {
+        height: 100%; /* Fill container height while maintaining aspect ratio */
+        width: auto; /* Maintain aspect ratio */
+    }
+</style>
+    
+<div style="justify-content: center; text-align: center;">
+<h4>Pinning insects for research in pest management (2014)</h4>
+<div class="card_photo border-primary">
+    {% for i in range(1, 4) %} <!-- Adjust the range as needed -->
+    <div class="item">
+        <img src="{{ url_for('static', filename='photos/bugs{}.jpg'.format(i)) }}" class="photo" alt="Photo {{ i }}">
+    </div>
+    {% endfor %}
+</div>
+<h4>Limited Irrigation Research Farm (2015-2016)</h4>
+<div class="card_photo border-primary">
+    {% for i in range(1, 14) %} <!-- Adjust the range as needed -->
+        <div class="item">
+            <img src="{{ url_for('static', filename='photos/lirf{}.jpg'.format(i)) }}" class="photo" alt="Photo {{ i }}">
+        </div>
+    {% endfor %}
+</div>
+<h4>More to come ...</h4>
+</div>
+{% endblock %}

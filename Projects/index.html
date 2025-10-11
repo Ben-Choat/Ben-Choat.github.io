@@ -21,7 +21,8 @@
   <nav>
     <ul class="flex-column">
       <h5 >Navigation</h5>
-      <li class="nav-item"><a class="nav-link" href="#header">Top of page</a></li>
+      <li class="nav-item"><a class="nav-link" href="#navbar">Top of page</a></li>
+      <li class="nav-item"><a class="nav-link" href="#hydroml2024">Hydrologic Regionalization</a></li>
       <li class="nav-item"><a class="nav-link" href="#aghydro">Agrohydrology</a></li>
       <li class="nav-item"><a class="nav-link" href="#swinfiltration">Stormwater Infiltration</a></li>
       <li class="nav-item"><a class="nav-link" href="#hydraulic">2D Hydraulic Modeling</a></li>
@@ -33,42 +34,80 @@
 <div id="main-content">
   <div class="col scrollable-column">
     <div class="card border-primary">
-      <section id="aghydro">
-        <h2>Agrohydrology</h2>
-          <p class="mx-auto text-wrap">
-            The current paradigm tends to view the balance of agricultural productivity
-            and environmental stewardship as divergent concepts where pursuing one excludes the other.
-            This perspective is from a unit-operations perspective that became popular due to rapid gains when implemented.
-            However, enough time has passed that the negative aspects of a unit-operations approach have revealed themselves and 
-            it is now clear that a systems-based approach is superior over medium to long timescales.
-            <br><br>
-            I'm grateful to have contributed to a new paper, <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2022EF003410" target="_blank">
-            Forming the Future of Agrohydrology.</a>
-            The paper is based on one of the more fun conference sessions I've attended - Forming the Future of Agrohydrology 
-            Research at the Frontiers in Hydrology Meeting (2022).
-            <br><br> 
-            In the paper we, as a  multidisciplinary  team, identify key research themes in agrohydrology, conceptualize future 
-            research topics, and estimate timeframes before each topic becomes a limiting factor in advancing water management in 
-            an agricultural context.
-            <br><br>
-            We envision a future where benefits far beyond food production are realized, externalities are minimized, and agriculture 
-            is realized as a net benefit to the environment as well as to humans. 
-            <br><br>
-            <strong>The bulk of the credit for this work is attributed to Sam Smidt and Erin Haacker who led the effort - taking it from initial 
-            conceptualization as a conference session to publication.</strong>
-          </p>
-          <div class="figure-container">
-            <!-- <img src="/assets/AgroHydro.png" id="AgroHydro" class="figure-Projects"
-              onclick="toggleImgSize()"> -->
-            <img src="/assets/AgroHydro.png" id="AgroHydro" class="img-domain rounded mb-3 expandable-hover">
-          </div>
-          
-        </section>
+      <section id="hydroml2024">
+        
+        <h2>Hydrologically Meaningful Regionalization including Anthropogenically Altered Catchments</h2>
+        <H5 class="text-center">
+          <!-- I presented this poster at HydroML 2024. It is a spin-off 
+          of the last chapter of my dissertation which we are 
+          still working on publishing. -->
+          HydroML 2024 Abstract & Poster
+        </H5> 
+        <p class="mx-auto text-wrap">
+          Previous efforts in hydrologic regionalization with unsupervised learning have focused on 
+          separation of clustered catchments in variable space. Anthropogenic catchments are almost 
+          always excluded from regionalization efforts and there is no effort to identify catchments 
+          that do not fit in the regionalization scheme. To overcome these shortcomings, this ongoing 
+          work is utilizing uniform manifold approximation and projection (UMAP) for reducing high 
+          dimensional data capturing many natural and anthropogenic variables, primarily from the 
+          GAGES-II dataset. Hierarchical density-based clustering in applications with noise (HDBSCAN) 
+          is then being applied to cluster 3,200 catchments into regions. Ultimately, regression and 
+          extreme gradient boosting (XGBoost) are being used to predict monthly, annual, and mean-annual 
+          water yield. The best hyperparameters associated with dimensions reduction, clustering, and 
+          prediction are those that produce best predictions of water yield. This approach has shown 
+          the ability to produce spatially contiguous regions despite no variables representing spatial 
+          coordinates, and the ability to identify outlier catchments that do not fit in the identified 
+          regionalization scheme. Next steps will investigate using supervised learning to predict which 
+          region a catchment belongs to and exploration of feature importance to identify which variables 
+          are needed to predict a catchment’s region and/or if a catchment is an outlier catchment. 
+          Ideally, the number of variables needed for classification will be greatly reduced for practical 
+          application to catchments for which such extensive data is not available.  
+        </p>
+        <div class="col-10 offset-1">
+          <img src="/assets/HydroML2024_BChoat.jpg" alt="Poster" class="hydroml_poster rounded mb-3 expandable-hover">
+        </div>
+      </section>
       </div>
     </div>
 
+  <div class="col scrollable-column">
+    <div class="card border-primary">
+      <section id="aghydro">
+        <h2>Agrohydrology</h2>
+        <p class="mx-auto text-wrap">
+          The current paradigm tends to view the balance of agricultural productivity
+          and environmental stewardship as divergent concepts where pursuing one excludes the other.
+          This perspective is from a unit-operations perspective that became popular due to rapid gains when implemented.
+          However, enough time has passed that the negative aspects of a unit-operations approach have revealed themselves and 
+          it is now clear that a systems-based approach is superior over medium to long timescales.
+          <br><br>
+          I'm grateful to have contributed to a new paper, <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2022EF003410" target="_blank">
+          Forming the Future of Agrohydrology.</a>
+          The paper is based on one of the more fun conference sessions I've attended - Forming the Future of Agrohydrology 
+          Research at the Frontiers in Hydrology Meeting (2022).
+          <br><br> 
+          In the paper we, as a  multidisciplinary  team, identify key research themes in agrohydrology, conceptualize future 
+          research topics, and estimate timeframes before each topic becomes a limiting factor in advancing water management in 
+          an agricultural context.
+          <br><br>
+          We envision a future where benefits far beyond food production are realized, externalities are minimized, and agriculture 
+          is realized as a net benefit to the environment as well as to humans. 
+          <br><br>
+          <strong>The bulk of the credit for this work is attributed to Sam Smidt and Erin Haacker who led the effort - taking it from initial 
+          conceptualization as a conference session to publication.</strong>
+        </p>
+        <div class="figure-container">
+          <!-- <img src="/assets/AgroHydro.png" id="AgroHydro" class="figure-Projects"
+            onclick="toggleImgSize()"> -->
+          <img src="/assets/AgroHydro.png" id="AgroHydro" class="img-domain rounded mb-3 expandable-hover">
+        </div>
+        
+      </section>
+    </div>
+  </div>
+
     
-    <div class="col scrollable-column">
+  <div class="col scrollable-column">
     <div class="card border-primary">
       <section id="swinfiltration">
         <h2>Spatial Arangement of Stormwater Infiltration Study with ParFlow</h2>
@@ -143,7 +182,8 @@
                 I do not suspect it will function as expeted if used on your phone.
               </p>
 
-              <img class="Projectsimg rounded mb-3 expandable-hover" src="/assets/CSeqRslts.png">
+              <!-- <img class="Projectsimg rounded mb-3 expandable-hover" src="/assets/CSeqRslts.png"> -->
+              <img src="/assets/CSeqRslts.png" alt="Poster" class="hydroml_poster rounded mb-3 expandable-hover">
               
               
               <h5 style="text-align: center;"><a href="/shiny">Visit Shiny App</a></h5>

@@ -272,7 +272,7 @@ h2, .h2 {
 }
 
 .hydroml_poster.expandable-hover:hover {
-  transform: scale(1.9); /* Increase size on hover */
+  transform: scale(1.5); /* Increase size on hover */
 }
 
 /* Set a fixed height for the column containing sections */
@@ -410,7 +410,52 @@ body {
   padding: 0rem;
   padding-bottom: 0.25rem;
   padding-top: 0.25rem;
+  margin-top: 1.5rem;
   z-index: -1;
+  text-align: center;
+}
+
+.headshot-img {
+  width: min(100px, 10vw);
+  height: min(100px, 10vw);
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin-left: auto;
+}
+
+.about-intro-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.about-intro-row p {
+  flex: 1 1 300px;
+  margin-bottom: 0;
+}
+
+.about-intro-row .headshot-img {
+  flex: 0 0 auto;
+}
+
+.about-header-row {
+  --about-header-gap: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--about-header-gap);
+  flex-wrap: wrap;
+}
+
+.about-header-row h2 {
+  margin-bottom: 0;
+}
+
+.about-header-row .headshot-img {
+  margin-left: calc(var(--about-header-gap) / 2);
 }
 
 
