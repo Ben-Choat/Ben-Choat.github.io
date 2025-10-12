@@ -288,16 +288,28 @@ h2, .h2 {
 }
 
 .figure-logo {
-    /* margin-bottom: 0.01rem;0.5rem; */
-    /* padding-right: 1vw; */
-    line-height: 1;
-    width: 4vw; /* Set the desired width */
-    height: auto; /* Maintain aspect ratio */
-  }
+  --nav-logo-height: clamp(62px, 15vh, 120px);
+  line-height: 1;
+  height: var(--nav-logo-height);
+  width: auto;
+  max-width: 20vw;
+  margin-block: 0rem;
+  display: block;
+}
   
 .figure-logo-container {
     display: flex;
     align-items: center;
+    padding: 0;
+}
+
+.navbar {
+  padding-block: 0rem;
+}
+
+.navbar .navbar-brand {
+  padding-block: 0;
+  margin-block:0;
 }
 
 /* Add some CSS to style the videos and container */
@@ -401,18 +413,35 @@ body {
 
 .card-footer-cust {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   width: 90vw;
   height: auto;
-  /* background-color: rgba(var(--bs-emphasis-color-rgb), 0.05); */
-  padding: 0rem;
-  padding-bottom: 0.25rem;
-  padding-top: 0.25rem;
+  padding: 0.25rem 0.75rem;
   margin-top: 1.5rem;
+  gap: 1rem;
   z-index: -1;
+}
+
+.card-footer-cust .footer-logo {
+  height: clamp(48px, 12vw, 72px);
+  width: auto;
+  margin-left: 0.25rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.card-footer-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+}
+
+.card-footer-text p {
+  margin-bottom: 0.25rem;
 }
 
 .headshot-img {
