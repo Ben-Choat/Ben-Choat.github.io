@@ -292,7 +292,7 @@ h2, .h2 {
   line-height: 1;
   height: var(--nav-logo-height);
   width: auto;
-  max-width: 20vw;
+  /* max-width: 40vw; */
   margin-block: 0rem;
   display: block;
 }
