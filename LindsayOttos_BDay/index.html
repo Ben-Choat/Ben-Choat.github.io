@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Space+Grotesk:wght@400;600;700&display=swap');
+
+        :root {
+            --deep-sky: #031933;
+            --plasma-blue: #4ec5ff;
+            --aurora-green: #7effb2;
+            --solar-gold: #ffd479;
+            --ice-white: #f4fbff;
+            --midnight: #050915;
+            --storm-indigo: #0e1b3b;
+            --spark: #ffb86b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Space Grotesk', 'Segoe UI', Arial, sans-serif;
+            color: var(--ice-white);
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            min-height: 100vh;
+            padding: 1.25rem;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(78, 197, 255, 0.35), transparent 55%),
+                radial-gradient(circle at 85% 10%, rgba(255, 212, 121, 0.35), transparent 45%),
+                radial-gradient(circle at 80% 80%, rgba(126, 255, 178, 0.3), transparent 55%),
+                linear-gradient(135deg, #030814 0%, #0b1a39 50%, #081a2a 100%);
+            animation: aurora 20s ease-in-out infinite;
+            overflow: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: absolute;
+            inset: -20%;
+            background:
+                radial-gradient(circle at 30% 30%, rgba(255, 184, 107, 0.25), transparent 40%),
+                radial-gradient(circle at 70% 70%, rgba(78, 197, 255, 0.2), transparent 45%),
+                repeating-linear-gradient(120deg, rgba(255, 255, 255, 0.03) 0, rgba(255, 255, 255, 0.03) 2px, transparent 2px, transparent 6px);
+            opacity: 0.5;
+            z-index: 0;
+            pointer-events: none;
+            animation: drift 26s ease-in-out infinite;
+        }
+
+        body::after {
+            inset: -10%;
+            opacity: 0.35;
+            animation: drift 32s ease-in-out infinite reverse;
+        }
+
+        @keyframes aurora {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes drift {
+            0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+            50% { transform: translate3d(-2%, 2%, 0) rotate(2deg); }
+            100% { transform: translate3d(2%, -2%, 0) rotate(-2deg); }
+        }
+
+        #rain-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .card {
+            position: relative;
+            width: min(92vw, 980px);
+            padding: clamp(1.5rem, 3vw, 3rem) clamp(1.5rem, 4vw, 2.5rem);
+            border-radius: 32px;
+            background: rgba(3, 8, 20, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 30px 70px rgba(3, 9, 28, 0.8), inset 0 0 40px rgba(78, 197, 255, 0.18);
+            text-align: center;
+            z-index: 1;
+            overflow: hidden;
+            backdrop-filter: blur(14px);
+            max-height: calc(100vh - 2.5rem);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 184, 107, 0.18), rgba(126, 255, 178, 0.2), rgba(78, 197, 255, 0.2));
+            mix-blend-mode: screen;
+            opacity: 0.4;
+            animation: pulseGlow 8s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.35; }
+            50% { opacity: 0.65; }
+        }
+
+        .cat-orbit {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            width: 84px;
+            height: 84px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 212, 121, 0.35), rgba(78, 197, 255, 0.08));
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 18px rgba(255, 184, 107, 0.4);
+            z-index: 2;
+            animation: catDrift 10s ease-in-out infinite;
+        }
+
+        .cat-orbit svg {
+            width: 52px;
+            height: 52px;
+            margin: 0;
+            filter: none;
+        }
+
+        .cat-orbit:hover .cat-eyes {
+            transform: scaleX(1.2);
+        }
+
+        @keyframes catDrift {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px) rotate(3deg); }
+        }
+
+        h1 {
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.35rem;
+            font-family: 'Playfair Display', 'Times New Roman', serif;
+            text-shadow: 0 0 28px rgba(126, 255, 178, 0.9);
+        }
+
+        .glow {
+            font-size: clamp(2rem, 4.2vw, 3.2rem);
+            color: var(--solar-gold);
+            animation: spectrum 3s ease-in-out infinite;
+        }
+
+        @keyframes spectrum {
+            0%, 100% { color: var(--solar-gold); }
+            50% { color: var(--plasma-blue); }
+        }
+
+        .subline {
+            font-size: clamp(1rem, 2.6vw, 1.8rem);
+            color: var(--aurora-green);
+            margin-bottom: 2rem;
+            letter-spacing: 0.1rem;
+            text-transform: uppercase;
+            animation: shimmer 5s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+
+        .floating-text {
+            display: inline-block;
+            animation: float 7s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        svg {
+            width: 100%;
+            max-width: 760px;
+            height: min(42vh, 520px);
+            filter: drop-shadow(0 0 15px rgba(78, 197, 255, 0.4));
+            margin: 1.5rem auto 1rem;
+        }
+
+        .title-badges {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.2rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 1rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.85rem;
+            letter-spacing: 0.08rem;
+            text-transform: uppercase;
+        }
+
+        .badge span {
+            color: var(--spark);
+            font-weight: 700;
+        }
+
+        .data-strip {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            padding: 0.6rem 1.4rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            font-size: 0.9rem;
+            letter-spacing: 0.07rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--ice-white);
+        }
+
+        footer {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+    </style>
+
+</head>
+
+<body>
+<canvas id="rain-canvas"></canvas>
+<main class="card">
+    <div class="cat-orbit" aria-hidden="true" title="Lindsay's birthday cat">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="catGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffd479"/>
+                    <stop offset="100%" stop-color="#7effb2"/>
+                </linearGradient>
+            </defs>
+            <path d="M16 18 L10 8 L22 14" fill="url(#catGlow)"/>
+            <path d="M48 18 L54 8 L42 14" fill="url(#catGlow)"/>
+            <circle cx="32" cy="34" r="18" fill="url(#catGlow)" stroke="#0c3a5e" stroke-width="2"/>
+            <circle class="cat-eyes" cx="24" cy="32" r="3.5" fill="#0c3a5e"/>
+            <circle class="cat-eyes" cx="40" cy="32" r="3.5" fill="#0c3a5e"/>
+            <path d="M32 38 L28 42 L36 42 Z" fill="#ffb86b"/>
+            <path d="M20 40 Q24 44 28 42" stroke="#0c3a5e" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M44 40 Q40 44 36 42" stroke="#0c3a5e" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <path d="M18 34 L10 32" stroke="#0c3a5e" stroke-width="2" stroke-linecap="round"/>
+            <path d="M18 38 L9 38" stroke="#0c3a5e" stroke-width="2" stroke-linecap="round"/>
+            <path d="M46 34 L54 32" stroke="#0c3a5e" stroke-width="2" stroke-linecap="round"/>
+            <path d="M46 38 L55 38" stroke="#0c3a5e" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    </div>
+    <div class="floating-text">
+        <h1 class="glow">Happy Birthday Lindsay</h1>
+        <p class="subline">2025 · Professional Engineer • Precision in Every Storm</p>
+        <div class="title-badges">
+            <div class="badge"><span>PE</span> Licensed Pro</div>
+            <div class="badge"><span>WRE</span> Water Resources Savant</div>
+            <div class="badge"><span>LEAD</span> Project Visionary</div>
+        </div>
+    </div>
+
+    <svg viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="bluePlasma" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4ec5ff"/>
+                <stop offset="100%" stop-color="#7effb2"/>
+            </linearGradient>
+            <linearGradient id="sunrise" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#ffe29f"/>
+                <stop offset="100%" stop-color="#ffa99f"/>
+            </linearGradient>
+        </defs>
+
+        <!-- Orbital backdrop -->
+        <rect width="800" height="520" rx="28" fill="#05142b"/>
+        <circle cx="650" cy="80" r="120" fill="url(#sunrise)" opacity="0.35"/>
+        <path d="M0 400 Q200 360 400 400 T800 400 L800 520 L0 520 Z" fill="#0b294f"/>
+
+        <!-- Stylized atmosphere layers -->
+        <path d="M80 360 C200 310 320 440 450 360 C560 295 660 360 760 320" fill="none" stroke="url(#bluePlasma)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M60 300 C200 260 320 360 480 300 C600 250 700 300 780 260" fill="none" stroke="#7effb24d" stroke-width="3" stroke-dasharray="12 12"/>
+
+        <!-- Scientist figure at workstation -->
+        <g filter="drop-shadow(0 0 10px rgba(78,197,255,0.5))">
+            <rect x="250" y="210" width="300" height="160" rx="12" fill="#0d2747" stroke="#2f89ff" stroke-width="2"/>
+            <rect x="270" y="230" width="260" height="120" rx="8" fill="#031226"/>
+            <path d="M270 290 Q400 260 530 290" fill="none" stroke="url(#bluePlasma)" stroke-width="2"/>
+            <circle cx="320" cy="280" r="6" fill="#ffde7a"/>
+            <circle cx="480" cy="278" r="6" fill="#7effb2"/>
+            <path d="M270 325 L530 325" stroke="#1f5a94" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+            <circle cx="400" cy="180" r="32" fill="#c4f1ff" stroke="#0c3a5e" stroke-width="3"/>
+            <path d="M372 182 Q400 140 428 182" fill="#0c3a5e"/>
+            <circle cx="388" cy="178" r="4" fill="#0c3a5e"/>
+            <circle cx="412" cy="178" r="4" fill="#0c3a5e"/>
+            <path d="M388 196 Q400 205 412 196" stroke="#0c3a5e" stroke-width="3" fill="none"/>
+            <rect x="360" y="210" width="80" height="110" rx="10" fill="#f0fff7" stroke="#0c3a5e" stroke-width="3"/>
+            <path d="M360 265 L440 265" stroke="#0c3a5e" stroke-width="2"/>
+            <rect x="395" y="230" width="15" height="25" fill="#66e0a2"/>
+        </g>
+
+        <!-- Weather instruments -->
+        <g>
+            <rect x="140" y="320" width="80" height="120" rx="18" fill="#072a4d" stroke="#2f89ff" stroke-width="2"/>
+            <path d="M180 340 A20 20 0 1 1 179.9 340" fill="none" stroke="url(#bluePlasma)" stroke-width="4"/>
+            <line x1="180" y1="340" x2="180" y2="305" stroke="#fefefe" stroke-width="3"/>
+            <circle cx="180" cy="340" r="4" fill="#fefefe"/>
+            <text x="160" y="405" fill="#7effb2" font-size="14" font-family="Arial">Winds</text>
+        </g>
+
+        <g>
+            <rect x="580" y="340" width="90" height="110" rx="18" fill="#072a4d" stroke="#2f89ff" stroke-width="2"/>
+            <path d="M610 360 C620 360 645 350 660 370" fill="none" stroke="#ffde7a" stroke-width="3"/>
+            <path d="M610 405 C620 405 645 395 660 415" fill="none" stroke="#7effb2" stroke-width="3"/>
+            <text x="595" y="430" fill="#7effb2" font-size="14" font-family="Arial">Sensors</text>
+        </g>
+
+        <!-- Orbiting satellites -->
+        <g>
+            <circle cx="160" cy="120" r="55" stroke="url(#bluePlasma)" stroke-width="2" fill="none"/>
+            <rect x="150" y="78" width="20" height="24" rx="4" fill="#e2f8ff" stroke="#0c3a5e" stroke-width="2"/>
+            <rect x="145" y="72" width="30" height="10" fill="#2f89ff"/>
+            <rect x="135" y="90" width="10" height="30" fill="#2f89ff"/>
+            <rect x="185" y="90" width="10" height="30" fill="#2f89ff"/>
+        </g>
+
+        <g>
+            <circle cx="640" cy="130" r="70" stroke="rgba(126,255,178,0.6)" stroke-width="2" fill="none" stroke-dasharray="10 12"/>
+            <rect x="630" y="70" width="30" height="30" rx="8" fill="#e2f8ff"/>
+            <rect x="610" y="80" width="20" height="70" fill="#2f89ff"/>
+            <rect x="660" y="80" width="20" height="70" fill="#2f89ff"/>
+        </g>
+
+        <!-- Radar sweep -->
+        <g opacity="0.65">
+            <circle cx="400" cy="400" r="70" fill="none" stroke="rgba(78,197,255,0.5)" stroke-width="2"/>
+            <circle cx="400" cy="400" r="100" fill="none" stroke="rgba(126,255,178,0.4)" stroke-width="2"/>
+            <path d="M400 400 L470 370" stroke="url(#bluePlasma)" stroke-width="4" stroke-linecap="round"/>
+        </g>
+
+        <!-- Celebratory text -->
+        <text x="400" y="480" text-anchor="middle" fill="#ffd479" font-size="28" font-family="Space Grotesk, Arial">
+            Celebrating Lindsay: Engineering Brilliance + Birthday Glow!
+        </text>
+    </svg>
+
+    <div class="data-strip">
+        <span class="chip">Professional Engineer with laser focus</span>
+        <span class="chip">Water Control Manual Master</span>
+        <span class="chip">Plans to bold reality</span>
+        <span class="chip">Holding it down for team Folsom</span>
+    </div>
+
+    <footer>Tap or click anywhere to summon a sparkling rain shower.</footer>
+</main>
+
+<script>
+    const canvas = document.getElementById('rain-canvas');
+    const ctx = canvas.getContext('2d');
+    const raindrops = [];
+    const dropColors = ['#4ec5ff', '#7effb2', '#ffd479', '#f4fbff'];
+    let rainTimer = 0;
+    let lastTime = 0;
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    function resizeCanvas() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+        canvas.style.width = `${window.innerWidth}px`;
+        canvas.style.height = `${window.innerHeight}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function spawnRain(x = Math.random() * window.innerWidth, y = -30, count = 20) {
+        for (let i = 0; i < count; i++) {
+            raindrops.push({
+                x: x + (Math.random() - 0.5) * 60,
+                y: y + Math.random() * 40,
+                length: Math.random() * 14 + 10,
+                width: Math.random() * 1.6 + 0.6,
+                speed: Math.random() * 5 + 8,
+                drift: (Math.random() - 0.5) * 1.2,
+                color: dropColors[Math.floor(Math.random() * dropColors.length)],
+                life: 80 + Math.random() * 40
+            });
+        }
+    }
+
+    function drawRain(timestamp = 0) {
+        const delta = timestamp - lastTime;
+        lastTime = timestamp;
+        rainTimer += delta;
+
+        if (rainTimer > 80) {
+            spawnRain();
+            rainTimer = 0;
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = raindrops.length - 1; i >= 0; i--) {
+            const drop = raindrops[i];
+            ctx.strokeStyle = drop.color;
+            ctx.lineWidth = drop.width;
+            ctx.globalAlpha = 0.85;
+            ctx.beginPath();
+            ctx.moveTo(drop.x, drop.y);
+            ctx.lineTo(drop.x + drop.drift, drop.y + drop.length);
+            ctx.stroke();
+
+            drop.x += drop.drift;
+            drop.y += drop.speed;
+            drop.life -= 1;
+
+            if (drop.life <= 0 || drop.y > window.innerHeight + 40) {
+                raindrops.splice(i, 1);
+            }
+        }
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(drawRain);
+    }
+
+    drawRain();
+    spawnRain(window.innerWidth * 0.5, 40, 80);
+    window.addEventListener('click', (event) => spawnRain(event.clientX, event.clientY, 60));
+</script>
+</body>
+</html>
