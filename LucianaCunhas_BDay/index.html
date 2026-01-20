@@ -156,6 +156,62 @@
             gap: 1.5rem;
             text-align: center;
             backdrop-filter: blur(14px);
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        .card.minimized {
+            transform: scale(0.12);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .card-toggle {
+            position: fixed;
+            top: 1.25rem;
+            right: 1.25rem;
+            z-index: 6;
+            background: rgba(12, 18, 35, 0.85);
+            color: var(--mist);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 999px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            letter-spacing: 0.08rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-toggle:focus-visible {
+            outline: 2px solid var(--glow);
+            outline-offset: 2px;
+        }
+
+        .timer {
+            position: fixed;
+            top: 1.25rem;
+            right: 11.5rem;
+            z-index: 6;
+            background: rgba(12, 18, 35, 0.85);
+            color: var(--mist);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 999px;
+            padding: 0.5rem 0.9rem;
+            font-size: 0.85rem;
+            letter-spacing: 0.08rem;
+            text-transform: uppercase;
+            backdrop-filter: blur(10px);
+        }
+
+        .timer span {
+            color: var(--glow);
+            font-weight: 600;
+        }
+
+        .flood-alert .flood-time {
+            margin-top: 1rem;
+            font-size: clamp(1rem, 2.2vw, 1.6rem);
+            letter-spacing: 0.1rem;
         }
 
         .title {
@@ -242,8 +298,13 @@
     <div class="building b4"></div>
     <div class="building b5"></div>
 </div>
-<div class="flood-alert" role="status" aria-live="polite">IT IS TOTALLY FLOODED!!!</div>
-<main class="card">
+<div class="flood-alert" role="status" aria-live="polite">
+    IT IS TOTALLY FLOODED!!!
+    <div class="flood-time">Time: <span id="flood-time">0.0s</span></div>
+</div>
+<div class="timer">Timer: <span id="run-time">0.0s</span> | Best: <span id="best-time">0.0s</span></div>
+<button class="card-toggle" type="button" aria-pressed="false" aria-controls="card">Minimize card</button>
+<main class="card" id="card">
     <div>
         <h1 class="title">Feliz aniversario Luciana!</h1>
         <p class="subtitle">Hydrology excellence, celebratory edition</p>
@@ -266,12 +327,18 @@
     const dropImage = new Image();
     const waterline = document.querySelector('.waterline');
     const floodAlert = document.querySelector('.flood-alert');
+    const card = document.getElementById('card');
+    const cardToggle = document.querySelector('.card-toggle');
+    const runTimeEl = document.getElementById('run-time');
+    const floodTimeEl = document.getElementById('flood-time');
+    const bestTimeEl = document.getElementById('best-time');
     dropImage.src = '/assets/RainDrop.svg';
 
     let dpr = Math.min(window.devicePixelRatio || 1, 2);
     const baseGravity = 0.01;
-    const gravityGain = 0.000002;
+    const gravityGain = 0.000009;
     let startTime = null;
+    let bestTime = 0;
     let waterHeight = 18;
     const floodStep = 0.4;
     let floodResetPending = false;
@@ -312,6 +379,8 @@
         if (waterline) waterline.style.height = `${waterHeight}vh`;
         floodResetPending = false;
         if (floodAlert) floodAlert.classList.remove('show');
+        startTime = null;
+        if (runTimeEl) runTimeEl.textContent = '0.0s';
         drops.forEach(drop => resetDrop(drop));
     }
 
@@ -322,6 +391,12 @@
         if (waterHeight >= 100 && !floodResetPending) {
             floodResetPending = true;
             if (floodAlert) floodAlert.classList.add('show');
+            const elapsedSeconds = (performance.now() - startTime) / 1000;
+            if (floodTimeEl) floodTimeEl.textContent = `${elapsedSeconds.toFixed(1)}s`;
+            if (elapsedSeconds > bestTime) {
+                bestTime = elapsedSeconds;
+                if (bestTimeEl) bestTimeEl.textContent = `${bestTime.toFixed(1)}s`;
+            }
             setTimeout(resetFlood, 1500);
         }
     }
@@ -331,6 +406,7 @@
         const elapsed = timestamp - startTime;
         const gravity = baseGravity + elapsed * gravityGain;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (runTimeEl) runTimeEl.textContent = `${(elapsed / 1000).toFixed(1)}s`;
 
         for (const drop of drops) {
             drop.vy += gravity;
@@ -399,6 +475,14 @@
     window.addEventListener('pointerdown', handleClick);
     resizeCanvas();
     if (waterline) waterline.style.height = `${waterHeight}vh`;
+
+    if (card && cardToggle) {
+        cardToggle.addEventListener('click', () => {
+            const isMinimized = card.classList.toggle('minimized');
+            cardToggle.setAttribute('aria-pressed', String(isMinimized));
+            cardToggle.textContent = isMinimized ? 'Show card' : 'Minimize card';
+        });
+    }
 
     dropImage.onload = () => {
         drops.length = 0;
