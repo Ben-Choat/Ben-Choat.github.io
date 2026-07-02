@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservoir Manager — Water Year Challenge</title>
+  <style>
+    :root {
+      --bg:   #0f172a;
+      --bg2:  #1e293b;
+      --bg3:  #334155;
+      --text: #f1f5f9;
+      --mute: #94a3b8;
+      --bord: #475569;
+      --blue: #3b82f6;
+      --blu2: #1d4ed8;
+      --grn:  #22c55e;
+      --ylw:  #f59e0b;
+      --red:  #ef4444;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    body { display: flex; flex-direction: column; }
+
+    /* ── HEADER ─────────────────────────────────────────────── */
+    header {
+      flex-shrink: 0;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--bord);
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo { font-size: 1rem; font-weight: 800; color: var(--blue); letter-spacing: -0.02em; }
+    .logo em { color: var(--text); font-style: normal; }
+
+    .hdr-stats { display: flex; gap: 20px; }
+    .hstat { text-align: center; line-height: 1.2; }
+    .hstat-lbl { font-size: 0.6rem; text-transform: uppercase; letter-spacing: .07em; color: var(--mute); }
+    .hstat-val { font-size: 0.95rem; font-weight: 700; }
+    #h-season { color: var(--ylw); }
+    #h-score  { color: var(--grn); }
+
+    /* ── MAIN GRID ───────────────────────────────────────────── */
+    .game {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 280px 1fr 1fr 220px;
+      grid-template-rows: 1fr;
+      gap: 10px;
+      padding: 10px;
+      min-height: 0;
+    }
+
+    .panel {
+      background: var(--bg2);
+      border: 1px solid var(--bord);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .ptitle {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--mute);
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--bord);
+      flex-shrink: 0;
+    }
+
+    /* ── RESERVOIR PANEL ────────────────────────────────────── */
+    #res-canvas {
+      display: block;
+      width: 100%;
+      flex: 1;
+      border-radius: 4px;
+      min-height: 0;
+    }
+
+    .res-stor { flex-shrink: 0; }
+    .res-stor-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+    #res-stor-big { font-size: 1.6rem; font-weight: 800; }
+    #res-stor-cap { font-size: 0.7rem; color: var(--mute); }
+    #res-zone-badge {
+      margin-left: auto;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .res-bar-wrap {
+      height: 10px;
+      background: var(--bg);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    #res-bar {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.6s ease, background 0.4s ease;
+    }
+    .res-ruler {
+      position: relative;
+      height: 14px;
+      margin-top: 3px;
+    }
+    .zmark {
+      position: absolute;
+      font-size: 0.55rem;
+      color: var(--mute);
+      transform: translateX(-50%);
+      text-align: center;
+    }
+
+    /* ── FORECAST CANVASES ──────────────────────────────────── */
+    #inflow-canvas, #demand-canvas {
+      display: block;
+      width: 100%;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    /* ── CI NUMBER DISPLAY ──────────────────────────────────── */
+    .fc-nums-big {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .fcn-item { line-height: 1.3; }
+    .fcn-lbl { font-size: 0.65rem; color: var(--mute); }
+    .fcn-val { font-size: 1.2rem; font-weight: 800; }
+    .fcn-val.grn { color: var(--grn); }
+    .fcn-val.ylw { color: var(--ylw); }
+    .fcn-val.red { color: var(--red); }
+
+    /* ── DEMAND COMPONENTS ──────────────────────────────────── */
+    .demand-comps-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .dcomp {
+      background: var(--bg3);
+      border-radius: 5px;
+      padding: 5px 7px;
+      text-align: center;
+    }
+    .dcomp-lbl  { font-size: 0.62rem; opacity: 0.8; margin-bottom: 1px; }
+    .dcomp-fc   { font-size: 1rem; font-weight: 700; }
+    .dcomp-actual { font-size: 0.75rem; opacity: 0.8; margin-top: 1px; min-height: 1em; }
+
+    /* ── REVEAL ANIMATIONS ──────────────────────────────────── */
+    @keyframes reveal-bounce {
+      0%   { transform: scale(0.25) translateY(20px); opacity: 0; }
+      55%  { transform: scale(1.18) translateY(-5px); opacity: 1; }
+      75%  { transform: scale(0.95) translateY(2px); }
+      100% { transform: scale(1)    translateY(0);    opacity: 1; }
+    }
+    @keyframes pts-flash {
+      0%   { transform: scale(0.3); opacity: 0; }
+      45%  { transform: scale(1.4); opacity: 1; }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+
+    .reveal-bounce { animation: reveal-bounce 0.55s cubic-bezier(.34,1.56,.64,1) both; }
+    .pts-flash-anim { animation: pts-flash 0.65s cubic-bezier(.34,1.56,.64,1) both; }
+
+    .reveal-block {
+      background: rgba(15,23,42,.96);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 8px;
+      padding: 8px 12px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .reveal-label {
+      font-size: 0.58rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--mute);
+      margin-bottom: 3px;
+    }
+    .reveal-value { font-size: 2rem; font-weight: 800; line-height: 1.1; }
+    .reveal-sub   { font-size: 0.72rem; color: var(--mute); margin-top: 3px; }
+
+    /* ── HISTORY CHART ──────────────────────────────────────── */
+    .hist-card {
+      background: var(--bg3);
+      border-radius: 6px;
+      padding: 8px 10px;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .hist-card-title { font-size: 0.62rem; color: var(--mute); margin-bottom: 4px; flex-shrink: 0; }
+    #hist-canvas { display: block; width: 100%; flex: 1; min-height: 0; border-radius: 4px; }
+
+    /* ── CONTROL PANEL ──────────────────────────────────────── */
+    .ctrl { flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
+
+    .slider-lbl {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      margin-bottom: 4px;
+    }
+    .slider-lbl span:first-child { color: var(--mute); }
+    #rel-display { font-weight: 700; color: var(--blue); }
+
+    input[type=range] {
+      width: 100%;
+      -webkit-appearance: none;
+      height: 8px;
+      background: var(--bg3);
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px;
+      background: var(--blue);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+    .rel-hints { font-size: 0.62rem; color: var(--mute); line-height: 1.6; }
+
+    .proj-card {
+      background: var(--bg3);
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+    .proj-lbl { font-size: 0.62rem; text-transform: uppercase; letter-spacing: .05em; color: var(--mute); margin-bottom: 4px; }
+    #proj-stor { font-size: 1.3rem; font-weight: 800; }
+    #proj-zone { font-size: 0.68rem; padding: 2px 6px; border-radius: 3px; margin-top: 3px; display: inline-block; }
+    #proj-range { font-size: 0.62rem; color: var(--mute); margin-top: 4px; line-height: 1.4; }
+
+    #env-warn {
+      font-size: 0.68rem;
+      background: rgba(245,158,11,.1);
+      border: 1px solid rgba(245,158,11,.3);
+      border-radius: 4px;
+      padding: 5px 8px;
+      color: var(--ylw);
+      display: none;
+    }
+
+    /* Result summary shown after release */
+    #result-summary-card {
+      background: var(--bg3);
+      border-radius: 6px;
+      padding: 8px 10px;
+      display: none;
+    }
+    #r-stor { font-size: 0.78rem; margin-bottom: 3px; }
+    #r-breakdown { font-size: 0.65rem; color: var(--mute); line-height: 1.7; }
+
+    #pts-reveal {
+      text-align: center;
+      font-size: 1.9rem;
+      font-weight: 800;
+      display: none;
+    }
+
+    .spacer { flex: 1; }
+
+    #action-btn {
+      padding: 11px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    #action-btn:hover:not(:disabled) { background: var(--blu2); transform: translateY(-1px); }
+    #action-btn:active:not(:disabled) { transform: translateY(0); }
+    #action-btn:disabled { background: var(--bg3); color: var(--mute); cursor: default; transform: none; }
+
+    /* ── LOG ────────────────────────────────────────────────── */
+    .log-bar {
+      flex-shrink: 0;
+      background: var(--bg2);
+      border-top: 1px solid var(--bord);
+      height: 88px;
+      overflow-y: auto;
+      padding: 4px 14px 4px;
+    }
+    .log-hdr {
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--mute);
+      padding-bottom: 3px;
+      position: sticky;
+      top: 0;
+      background: var(--bg2);
+    }
+    .log-row {
+      display: grid;
+      grid-template-columns: 42px 1fr 50px;
+      gap: 8px;
+      font-size: 0.66rem;
+      padding: 2px 0;
+      border-bottom: 1px solid rgba(71,85,105,.25);
+      align-items: center;
+    }
+    .log-wk { color: var(--mute); }
+    .log-txt { color: var(--text); }
+    .log-pts { font-weight: 700; text-align: right; }
+    .log-pts.pos { color: var(--grn); }
+    .log-pts.neg { color: var(--red); }
+    .log-pts.zer { color: var(--mute); }
+
+    /* ── MODALS ─────────────────────────────────────────────── */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.8);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 50;
+    }
+    .overlay.hidden { display: none; }
+
+    .mbox {
+      background: var(--bg2);
+      border: 1px solid var(--bord);
+      border-radius: 12px;
+      padding: 28px;
+      max-width: 680px;
+      width: 92%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .mtitle {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--blue);
+      margin-bottom: 14px;
+    }
+    .mbody {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: var(--mute);
+      margin-bottom: 18px;
+    }
+    .mbody strong { color: var(--text); }
+    .mbody p { margin-bottom: 10px; }
+
+    .zone-tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin: 10px 0;
+    }
+    .zone-tbl th {
+      text-align: left;
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--bord);
+      color: var(--text);
+    }
+    .zone-tbl td { padding: 6px 10px; border-bottom: 1px solid rgba(71,85,105,.3); }
+
+    .mbtn {
+      display: block; width: 100%;
+      padding: 12px;
+      background: var(--blue); color: #fff;
+      border: none; border-radius: 6px;
+      font-size: 0.95rem; font-weight: 700;
+      cursor: pointer;
+    }
+    .mbtn:hover { background: var(--blu2); }
+
+    .score-big {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--grn);
+      text-align: center;
+      margin: 12px 0;
+    }
+    .grade { font-size: 1.1rem; font-weight: 700; color: var(--ylw); text-align: center; margin-bottom: 14px; }
+    .go-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+    .go-stat { background: var(--bg3); border-radius: 6px; padding: 10px; text-align: center; }
+    .go-stat-v { font-size: 1.3rem; font-weight: 800; }
+    .go-stat-l { font-size: 0.65rem; color: var(--mute); margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ WELCOME MODAL ══════════════════ -->
+<div id="welcome" class="overlay">
+  <div class="mbox">
+    <div class="mtitle">Reservoir Manager</div>
+    <div class="mbody">
+      <p>You are the water resource manager for a reservoir serving a growing city, farms, and a hydroelectric facility. Your job: balance water supply, flood safety, and downstream needs over a full <strong>52-week water year</strong>.</p>
+      <p>Each week you receive <strong>probabilistic forecasts</strong> (95% CI) for both <em>inflow</em> and <em>demand</em>. Decide how much to release — then actuals are revealed and storage updates.</p>
+
+      <table class="zone-tbl">
+        <tr><th>Zone</th><th>Storage</th><th>Scoring</th></tr>
+        <tr><td style="color:#b45309">Dead Pool</td><td>0 – 100</td><td>Water unreachable by gravity. <strong style="color:#ef4444">−20 pts/wk</strong></td></tr>
+        <tr><td style="color:#60a5fa">Conservation Pool</td><td>100 – 600</td><td>Target zone. <strong style="color:#22c55e">+10 pts/wk</strong> + up to +12 bonus near target (350)</td></tr>
+        <tr><td style="color:#fbbf24">Flood Control Pool</td><td>600 – 850</td><td>Reserved for flood capture. <strong>0 pts/wk</strong></td></tr>
+        <tr><td style="color:#f87171">Surcharge Pool</td><td>850 – 1,000</td><td>Structural risk zone. <strong style="color:#ef4444">−15 pts/wk</strong></td></tr>
+      </table>
+
+      <p><strong>Downstream demands</strong> — your release must also cover these each week:</p>
+      <table class="zone-tbl">
+        <tr><th>Demand</th><th>Season</th><th>Typical range</th></tr>
+        <tr><td style="color:#a78bfa">Urban water supply</td><td>Peaks in summer</td><td>5 – 15 units/wk</td></tr>
+        <tr><td style="color:#4ade80">Agriculture (irrigation)</td><td>Peaks in summer, near zero in winter</td><td>0 – 25 units/wk</td></tr>
+        <tr><td style="color:#fbbf24">Hydroelectric</td><td>Peaks in winter</td><td>2 – 14 units/wk</td></tr>
+      </table>
+      <p>Release below total demand (+ 15 unit env. flow) incurs a shortfall penalty. You may choose to ration during droughts — but it costs points.</p>
+      <p><strong>Tip:</strong> Build up storage in spring so you have carryover for summer demand. The CI on forecasts is wide — plan for the range, not just the mean.</p>
+    </div>
+    <button class="mbtn" id="start-btn">Begin Water Year →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ GAME OVER MODAL ════════════════ -->
+<div id="gameover" class="overlay hidden">
+  <div class="mbox">
+    <div class="mtitle">Water Year Complete</div>
+    <div class="score-big" id="go-score">0</div>
+    <div class="grade" id="go-grade">Grade: —</div>
+    <div class="go-stats">
+      <div class="go-stat"><div class="go-stat-v" id="go-wks-conserve">—</div><div class="go-stat-l">Weeks in Conservation Pool</div></div>
+      <div class="go-stat"><div class="go-stat-v" id="go-wks-danger">—</div><div class="go-stat-l">Weeks in Danger Zones</div></div>
+      <div class="go-stat"><div class="go-stat-v" id="go-avg-err">—</div><div class="go-stat-l">Avg Forecast Error</div></div>
+      <div class="go-stat"><div class="go-stat-v" id="go-env-viol">—</div><div class="go-stat-l">Demand Shortfall Weeks</div></div>
+    </div>
+    <div class="mbody" id="go-msg" style="margin-bottom:14px"></div>
+    <button class="mbtn" id="restart-btn">Start New Water Year</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ HEADER ════════════════════════ -->
+<header>
+  <div class="logo">Reservoir<em>Manager</em></div>
+  <div class="hdr-stats">
+    <div class="hstat">
+      <div class="hstat-lbl">Week</div>
+      <div class="hstat-val" id="h-week">1 / 52</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-lbl">Season</div>
+      <div class="hstat-val" id="h-season">Winter</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-lbl">Storage</div>
+      <div class="hstat-val" id="h-stor">350</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-lbl">Score</div>
+      <div class="hstat-val" id="h-score">0</div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════ MAIN GAME ═════════════════════ -->
+<div class="game">
+
+  <!-- COL 1: Reservoir Canvas -->
+  <div class="panel">
+    <div class="ptitle">Reservoir Storage</div>
+    <canvas id="res-canvas"></canvas>
+    <div class="res-stor">
+      <div class="res-stor-row">
+        <span id="res-stor-big">350</span>
+        <span id="res-stor-cap">/ 1,000 units</span>
+        <span id="res-zone-badge"></span>
+      </div>
+      <div class="res-bar-wrap">
+        <div id="res-bar" style="width:35%"></div>
+      </div>
+      <div class="res-ruler">
+        <div class="zmark" style="left:10%">100</div>
+        <div class="zmark" style="left:35%">350</div>
+        <div class="zmark" style="left:60%">600</div>
+        <div class="zmark" style="left:85%">850</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COL 2: Inflow Panel -->
+  <div class="panel">
+    <div class="ptitle">Inflow Forecast &nbsp;<span style="font-size:0.58rem;opacity:.6">(95% CI)</span></div>
+
+    <canvas id="inflow-canvas" height="72"></canvas>
+
+    <div id="inflow-reveal" class="reveal-block" style="display:none">
+      <div class="reveal-label">Actual Inflow</div>
+      <div class="reveal-value" id="inflow-actual-val" style="color:#60a5fa">—</div>
+      <div class="reveal-sub" id="inflow-actual-cmp">—</div>
+    </div>
+
+    <div class="fc-nums-big">
+      <div class="fcn-item">
+        <div class="fcn-lbl">Lower 95%</div>
+        <div class="fcn-val grn" id="fn-lo">—</div>
+      </div>
+      <div class="fcn-item">
+        <div class="fcn-lbl">Mean</div>
+        <div class="fcn-val ylw" id="fn-mu">—</div>
+      </div>
+      <div class="fcn-item">
+        <div class="fcn-lbl">Upper 95%</div>
+        <div class="fcn-val red" id="fn-hi">—</div>
+      </div>
+    </div>
+
+    <div class="hist-card">
+      <div class="hist-card-title">Inflow History — actual (blue) vs forecast (yellow)</div>
+      <canvas id="hist-canvas"></canvas>
+    </div>
+  </div>
+
+  <!-- COL 3: Demand Panel -->
+  <div class="panel">
+    <div class="ptitle">Demand Forecast &nbsp;<span style="font-size:0.58rem;opacity:.6">(95% CI)</span></div>
+
+    <canvas id="demand-canvas" height="175"></canvas>
+
+    <div id="demand-reveal" class="reveal-block" style="display:none">
+      <div class="reveal-label">Actual Demand</div>
+      <div class="reveal-value" id="demand-actual-val" style="color:#94a3b8">—</div>
+      <div class="reveal-sub" id="demand-actual-cmp">—</div>
+    </div>
+
+    <div class="fc-nums-big">
+      <div class="fcn-item">
+        <div class="fcn-lbl">Lower 95%</div>
+        <div class="fcn-val grn" id="dn-lo">—</div>
+      </div>
+      <div class="fcn-item">
+        <div class="fcn-lbl">Mean</div>
+        <div class="fcn-val ylw" id="dn-mu">—</div>
+      </div>
+      <div class="fcn-item">
+        <div class="fcn-lbl">Upper 95%</div>
+        <div class="fcn-val red" id="dn-hi">—</div>
+      </div>
+    </div>
+
+    <div class="demand-comps-grid">
+      <div class="dcomp">
+        <div class="dcomp-lbl" style="color:#a78bfa">Urban</div>
+        <div class="dcomp-fc" style="color:#a78bfa" id="dc-urban">—</div>
+        <div class="dcomp-actual" style="color:#a78bfa" id="da-urban"></div>
+      </div>
+      <div class="dcomp">
+        <div class="dcomp-lbl" style="color:#4ade80">Ag.</div>
+        <div class="dcomp-fc" style="color:#4ade80" id="dc-ag">—</div>
+        <div class="dcomp-actual" style="color:#4ade80" id="da-ag"></div>
+      </div>
+      <div class="dcomp">
+        <div class="dcomp-lbl" style="color:#fbbf24">Hydro</div>
+        <div class="dcomp-fc" style="color:#fbbf24" id="dc-hydro">—</div>
+        <div class="dcomp-actual" style="color:#fbbf24" id="da-hydro"></div>
+      </div>
+      <div class="dcomp">
+        <div class="dcomp-lbl" style="color:#64748b">Env. Flow</div>
+        <div class="dcomp-fc" style="color:#64748b" id="dc-env">15 <span style="font-size:0.6rem;opacity:.7">(fixed)</span></div>
+        <div class="dcomp-actual" style="color:#64748b" id="da-env"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COL 4: Controls -->
+  <div class="panel ctrl">
+    <div class="ptitle">Release Decision</div>
+
+    <div>
+      <div class="slider-lbl">
+        <span>Release Amount</span>
+        <span id="rel-display">50 units</span>
+      </div>
+      <input type="range" id="rel-slider" min="0" max="250" value="50" step="1">
+      <div class="rel-hints" id="rel-hints">
+        Min env. flow: 15 units<br>
+        Max physical: 250 units
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-lbl">Projected Storage (at mean inflow)</div>
+      <div id="proj-stor">—</div>
+      <div><span id="proj-zone"></span></div>
+      <div id="proj-range" style="margin-top:6px;"></div>
+    </div>
+
+    <div id="env-warn">⚠ placeholder</div>
+
+    <div id="result-summary-card">
+      <div id="r-stor">—</div>
+      <div id="r-breakdown">—</div>
+    </div>
+
+    <div id="pts-reveal">—</div>
+
+    <div class="spacer"></div>
+
+    <button id="action-btn">Release Water →</button>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════ LOG ═══════════════════════════ -->
+<div class="log-bar">
+  <div class="log-hdr">Decision Log</div>
+  <div id="log-rows"></div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════
+const CAP   = 1000;
+const DPOOL = 100;
+const CTOP  = 600;
+const FTOP  = 850;
+const CTGT  = 350;
+const EFLOW = 15;
+const MAXRL = 250;
+const WEEKS = 52;
+
+const DEMAND_COMPS = [
+  { id:'urban', label:'Urban', col:'#a78bfa', peakWk:30, base:10, amp: 5, cv:0.12 },
+  { id:'ag',    label:'Ag.',   col:'#4ade80', peakWk:26, base: 0, amp:25, cv:0.22 },
+  { id:'hydro', label:'Hydro', col:'#fbbf24', peakWk: 4, base: 8, amp: 6, cv:0.18 },
+];
+
+const ZONES = [
+  { id:'dead',     label:'Dead Pool',          min:0,     max:DPOOL, pts:-20, col:'#7c2d12' },
+  { id:'conserve', label:'Conservation Pool',  min:DPOOL, max:CTOP,  pts: 10, col:'#1e40af' },
+  { id:'flood',    label:'Flood Control Pool', min:CTOP,  max:FTOP,  pts:  0, col:'#92400e' },
+  { id:'surge',    label:'Surcharge Pool',     min:FTOP,  max:CAP,   pts:-15, col:'#991b1b' },
+];
+
+const SEASONS = [
+  { name:'Winter', weeks:[1,13],  col:'#93c5fd' },
+  { name:'Spring', weeks:[14,26], col:'#86efac' },
+  { name:'Summer', weeks:[27,39], col:'#fde68a' },
+  { name:'Fall',   weeks:[40,52], col:'#fdba74' },
+];
+
+// ════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════
+let S = {};
+
+function resetState() {
+  S = {
+    week: 1,
+    storage: 350,
+    score: 0,
+    history: [],
+    actualInflows: [],
+    fcMu: 0, fcSd: 0, fcLo: 0, fcHi: 0,
+    demandFc: null,
+    actualDemand: null,
+    phase: 'decision',
+    release: 50,
+  };
+}
+
+// ════════════════════════════════════════════════
+// HYDROLOGY
+// ════════════════════════════════════════════════
+function seasonalMean(week) {
+  const angle = ((week - 16) / WEEKS) * 2 * Math.PI;
+  return Math.max(6, 58 + 52 * Math.cos(angle));
+}
+
+function makeForecast(week) {
+  const mu = seasonalMean(week);
+  const sd = mu * 0.42;
+  return { mu, sd, lo: Math.max(0, mu - 1.96 * sd), hi: mu + 1.96 * sd };
+}
+
+function sampleInflow(mu, sd) {
+  const u1 = Math.random(), u2 = Math.random();
+  const z = Math.sqrt(-2 * Math.log(u1 + 1e-10)) * Math.cos(2 * Math.PI * u2);
+  const extra = Math.random() < 0.06 ? mu * (0.8 + Math.random() * 1.5) : 0;
+  return Math.max(0, Math.round((mu + z * sd + extra) * 10) / 10);
+}
+
+// ════════════════════════════════════════════════
+// DEMAND MODEL
+// ════════════════════════════════════════════════
+function demandCompMean(week, c) {
+  const angle = ((week - c.peakWk) / WEEKS) * 2 * Math.PI;
+  return Math.max(0, c.base + c.amp * Math.cos(angle));
+}
+
+function makeDemandForecast(week) {
+  const comps = DEMAND_COMPS.map(c => {
+    const mu = demandCompMean(week, c);
+    const sd = mu * c.cv;
+    return { ...c, mu, sd, lo: Math.max(0, mu - 1.96 * sd), hi: mu + 1.96 * sd };
+  });
+  const totalMu = comps.reduce((s, c) => s + c.mu, 0);
+  const totalSd = Math.sqrt(comps.reduce((s, c) => s + c.sd * c.sd, 0));
+  return { comps, totalMu, totalSd,
+    totalLo: Math.max(0, totalMu - 1.96 * totalSd),
+    totalHi: totalMu + 1.96 * totalSd };
+}
+
+function sampleActualDemand(dmFc) {
+  const comps = dmFc.comps.map(c => {
+    const u1 = Math.random(), u2 = Math.random();
+    const z = Math.sqrt(-2 * Math.log(u1 + 1e-10)) * Math.cos(2 * Math.PI * u2);
+    return { ...c, actual: Math.max(0, Math.round((c.mu + z * c.sd) * 10) / 10) };
+  });
+  return { comps, total: comps.reduce((s, c) => s + c.actual, 0) };
+}
+
+// ════════════════════════════════════════════════
+// ZONE / SEASON HELPERS
+// ════════════════════════════════════════════════
+function getZone(stor) {
+  for (const z of ZONES) if (stor >= z.min && stor < z.max) return z;
+  return stor < 0 ? ZONES[0] : ZONES[ZONES.length - 1];
+}
+
+function getSeason(week) {
+  for (const s of SEASONS) if (week >= s.weeks[0] && week <= s.weeks[1]) return s;
+  return SEASONS[0];
+}
+
+// ════════════════════════════════════════════════
+// SCORING
+// ════════════════════════════════════════════════
+function calcScore(stor, release, actualDemandTotal) {
+  const zone = getZone(stor);
+  let pts = zone.pts;
+  let breakdown = [];
+
+  if (zone.id === 'conserve') {
+    breakdown.push(`conservation pool +${zone.pts}`);
+    const dist = Math.abs(stor - CTGT);
+    const poolRadius = Math.max(CTGT - DPOOL, CTOP - CTGT);
+    const bonus = Math.max(0, Math.round(12 * (1 - dist / poolRadius)));
+    if (bonus > 0) {
+      pts += bonus;
+      const label = dist <= 25 ? 'perfect target' : dist <= 75 ? 'near target' : 'target proximity';
+      breakdown.push(`${label} +${bonus}`);
+    }
+  } else {
+    breakdown.push(`${zone.label} ${zone.pts > 0 ? '+' : ''}${zone.pts}`);
+  }
+
+  const totalRequired = EFLOW + actualDemandTotal;
+  const shortfall = Math.max(0, totalRequired - release);
+  if (shortfall > 0) {
+    const sfPts = -Math.max(1, Math.round(shortfall / 8));
+    pts += sfPts;
+    const who = release < EFLOW ? 'env. flow + demand' : 'demand';
+    breakdown.push(`${who} shortfall ${shortfall.toFixed(0)} units ${sfPts}`);
+  }
+
+  return { pts, breakdown };
+}
+
+// ════════════════════════════════════════════════
+// RESERVOIR CANVAS
+// ════════════════════════════════════════════════
+const resC = document.getElementById('res-canvas');
+const resX = resC.getContext('2d');
+let waveT = 0, rafId = null;
+
+function resizeResCanvas() {
+  const par = resC.parentElement;
+  resC.width  = par.clientWidth - 24;
+  resC.height = par.clientHeight - 105;
+  drawRes();
+}
+
+function drawRes() {
+  const ctx = resX;
+  const W = resC.width, H = resC.height;
+  if (W <= 0 || H <= 0) return;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const PAD = 10;
+  const TY = PAD, BY = H - PAD;
+  const TL = PAD * 2, TR = W - PAD * 2;
+  const BL = W * 0.3, BR = W * 0.7;
+
+  const lx = y => TL + ((y - TY) / (BY - TY)) * (BL - TL);
+  const rx = y => TR + ((y - TY) / (BY - TY)) * (BR - TR);
+  const sy = s => BY - (Math.max(0, Math.min(CAP, s)) / CAP) * (BY - TY);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(TL, TY); ctx.lineTo(TR, TY);
+  ctx.lineTo(BR, BY); ctx.lineTo(BL, BY);
+  ctx.closePath();
+  ctx.clip();
+
+  ctx.fillStyle = '#1a0f08';
+  ctx.fillRect(0, 0, W, H);
+
+  const bands = [
+    { bot:0,     top:DPOOL, bg:'#2d1107' },
+    { bot:DPOOL, top:CTOP,  bg:'#061528' },
+    { bot:CTOP,  top:FTOP,  bg:'#2a1a00' },
+    { bot:FTOP,  top:CAP,   bg:'#2a0000' },
+  ];
+  for (const b of bands) {
+    const y1 = sy(b.top), y2 = sy(b.bot);
+    ctx.beginPath();
+    ctx.moveTo(lx(y1), y1); ctx.lineTo(rx(y1), y1);
+    ctx.lineTo(rx(y2), y2); ctx.lineTo(lx(y2), y2);
+    ctx.closePath();
+    ctx.fillStyle = b.bg;
+    ctx.fill();
+  }
+
+  const wY  = sy(S.storage);
+  const wBY = sy(0);
+  const lwx = lx(wY), rwx = rx(wY);
+  const lbx = lx(wBY), rbx = rx(wBY);
+
+  const grad = ctx.createLinearGradient(0, wY, 0, wBY);
+  grad.addColorStop(0, 'rgba(37,99,235,.78)');
+  grad.addColorStop(0.4, 'rgba(29,78,216,.88)');
+  grad.addColorStop(1, 'rgba(15,23,80,.96)');
+
+  waveT += 0.035;
+  const NP = 24;
+
+  ctx.beginPath();
+  ctx.moveTo(lbx, wBY);
+  ctx.lineTo(rbx, wBY);
+  ctx.lineTo(rwx, wY);
+  for (let i = NP; i >= 0; i--) {
+    const t = i / NP;
+    const wx = rwx + t * (lwx - rwx);
+    const wy = wY + Math.sin(t * Math.PI * 4 + waveT) * 1.8
+                  + Math.sin(t * Math.PI * 9 + waveT * 1.7) * 0.6;
+    ctx.lineTo(wx, wy);
+  }
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  ctx.save();
+  ctx.globalAlpha = 0.35;
+  ctx.strokeStyle = '#93c5fd';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  for (let i = 0; i <= NP; i++) {
+    const t = i / NP;
+    const wx = lwx + t * (rwx - lwx);
+    const wy = wY + Math.sin(t * Math.PI * 4 + waveT) * 1.8
+                  + Math.sin(t * Math.PI * 9 + waveT * 1.7) * 0.6;
+    i === 0 ? ctx.moveTo(wx, wy) : ctx.lineTo(wx, wy);
+  }
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.restore();
+
+  const bounds = [
+    { s: DPOOL, col:'#92400e' },
+    { s: CTOP,  col:'#2563eb' },
+    { s: FTOP,  col:'#d97706' },
+    { s: CTGT,  col:'rgba(255,255,255,.18)', dash:[2,4] },
+  ];
+  for (const b of bounds) {
+    const y = sy(b.s);
+    ctx.save();
+    ctx.strokeStyle = b.col;
+    ctx.lineWidth = 1;
+    if (b.dash) ctx.setLineDash(b.dash);
+    else ctx.setLineDash([3,3]);
+    ctx.beginPath();
+    ctx.moveTo(lx(y), y);
+    ctx.lineTo(rx(y), y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  ctx.strokeStyle = '#475569';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(TL, TY); ctx.lineTo(TR, TY);
+  ctx.lineTo(BR, BY); ctx.lineTo(BL, BY);
+  ctx.closePath();
+  ctx.stroke();
+
+  ctx.textAlign = 'center';
+  const zlabels = [
+    { bot:0,     top:DPOOL, txt:'DEAD POOL',     col:'#b45309' },
+    { bot:DPOOL, top:CTOP,  txt:'CONSERVATION',  col:'#3b82f6' },
+    { bot:CTOP,  top:FTOP,  txt:'FLOOD CONTROL', col:'#f59e0b' },
+    { bot:FTOP,  top:CAP,   txt:'SURCHARGE',     col:'#ef4444' },
+  ];
+  for (const z of zlabels) {
+    const midY = (sy(z.bot) + sy(z.top)) / 2;
+    const midX = (lx(midY) + rx(midY)) / 2;
+    const zH = sy(z.bot) - sy(z.top);
+    if (zH > 16) {
+      ctx.font = `${Math.min(11, zH * 0.3)}px system-ui`;
+      ctx.fillStyle = z.col;
+      ctx.globalAlpha = 0.75;
+      ctx.fillText(z.txt, midX, midY + 4);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  if (wY > TY + 14) {
+    const midX = (lwx + rwx) / 2;
+    ctx.font = 'bold 11px system-ui';
+    ctx.fillStyle = '#bfdbfe';
+    ctx.textAlign = 'center';
+    ctx.globalAlpha = 0.9;
+    ctx.fillText(Math.round(S.storage), midX, wY - 4);
+    ctx.globalAlpha = 1;
+  }
+}
+
+function startAnim() {
+  if (rafId) return;
+  function tick() { drawRes(); rafId = requestAnimationFrame(tick); }
+  tick();
+}
+
+// ════════════════════════════════════════════════
+// INFLOW FORECAST CANVAS
+// ════════════════════════════════════════════════
+const inflowC = document.getElementById('inflow-canvas');
+const inflowX = inflowC.getContext('2d');
+
+function drawInflowForecast(actualVal = null) {
+  inflowC.width = inflowC.parentElement.clientWidth - 24;
+  inflowC.height = 72;
+  const W = inflowC.width, H = 72;
+  const ctx = inflowX;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(0, 0, W, H);
+
+  const LPAD = 6, RPAD = 38;
+  const chartW = W - LPAD - RPAD;
+  const maxV = Math.max(150, S.fcHi * 1.12);
+  const toX = v => LPAD + (v / maxV) * chartW;
+
+  // Grid lines
+  ctx.setLineDash([1, 4]);
+  ctx.strokeStyle = '#1e293b';
+  ctx.lineWidth = 1;
+  for (const v of [25, 50, 75, 100, 125, 150]) {
+    if (v <= maxV) {
+      const x = toX(v);
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H - 14); ctx.stroke();
+    }
+  }
+  ctx.setLineDash([]);
+
+  const col = '#60a5fa';
+  const y = 5, h = H - 22;
+  const midY = y + h / 2;
+  const x1 = toX(S.fcLo), x2 = toX(S.fcHi), xM = toX(S.fcMu);
+
+  // Shaded CI region
+  ctx.fillStyle = col + '28';
+  ctx.fillRect(x1, y, x2 - x1, h);
+
+  // Center line
+  ctx.strokeStyle = col + '50';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(x1, midY); ctx.lineTo(x2, midY); ctx.stroke();
+
+  // End caps
+  ctx.strokeStyle = col;
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(x1, y + 3); ctx.lineTo(x1, y + h - 3);
+  ctx.moveTo(x2, y + 3); ctx.lineTo(x2, y + h - 3);
+  ctx.stroke();
+
+  // Mean tick
+  ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(xM, y); ctx.lineTo(xM, y + h); ctx.stroke();
+
+  // Labels at cap ends
+  ctx.fillStyle = col + 'aa';
+  ctx.font = '10px system-ui';
+  ctx.textAlign = 'right';
+  ctx.fillText(S.fcLo.toFixed(0), x1 - 3, midY + 4);
+  ctx.textAlign = 'left';
+  ctx.fillText(S.fcHi.toFixed(0), x2 + 3, midY + 4);
+
+  // Mean label above tick
+  ctx.fillStyle = col;
+  ctx.font = 'bold 11px system-ui';
+  ctx.textAlign = 'center';
+  ctx.fillText(S.fcMu.toFixed(0), xM, y - 1);
+
+  // Actual marker
+  if (actualVal !== null) {
+    const xA = toX(actualVal);
+    ctx.save();
+    ctx.shadowColor = 'rgba(255,255,255,0.6)';
+    ctx.shadowBlur = 8;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(xA, 2); ctx.lineTo(xA, H - 14); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(xA, midY, 5.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // X-axis labels
+  ctx.fillStyle = '#475569';
+  ctx.font = '9px system-ui';
+  ctx.textAlign = 'center';
+  for (const v of [25, 50, 75, 100, 125, 150]) {
+    if (v <= maxV) ctx.fillText(v, toX(v), H - 2);
+  }
+}
+
+// ════════════════════════════════════════════════
+// DEMAND FORECAST CANVAS
+// ════════════════════════════════════════════════
+const demandC = document.getElementById('demand-canvas');
+const demandX = demandC.getContext('2d');
+
+function drawDemandForecast(actualDemand = null) {
+  if (!S.demandFc) return;
+  demandC.width = demandC.parentElement.clientWidth - 24;
+  demandC.height = 175;
+  const W = demandC.width, H = 175;
+  const ctx = demandX;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(0, 0, W, H);
+
+  const LPAD = 46, RPAD = 34;
+  const chartW = W - LPAD - RPAD;
+  const maxV = Math.max(55, S.demandFc.totalHi * 1.2);
+  const toX = v => LPAD + (v / maxV) * chartW;
+
+  // Grid lines
+  ctx.setLineDash([1, 4]);
+  ctx.strokeStyle = '#1e293b';
+  ctx.lineWidth = 1;
+  for (const v of [10, 20, 30, 40, 50]) {
+    if (v <= maxV) {
+      const x = toX(v);
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H - 12); ctx.stroke();
+    }
+  }
+  ctx.setLineDash([]);
+
+  function ciRow(y, h, lo, mu, hi, col, label, bold, actualV) {
+    const x1 = toX(lo), x2 = toX(hi), xM = toX(mu);
+    const midY = y + h / 2;
+
+    ctx.fillStyle = col;
+    ctx.font = (bold ? 'bold ' : '') + Math.min(11, h - 1) + 'px system-ui';
+    ctx.textAlign = 'right';
+    ctx.fillText(label, LPAD - 3, midY + 3);
+
+    ctx.fillStyle = col + '1e';
+    ctx.fillRect(x1, y + 1, x2 - x1, h - 2);
+
+    ctx.strokeStyle = col + '50';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x1, midY); ctx.lineTo(x2, midY); ctx.stroke();
+
+    ctx.strokeStyle = col;
+    ctx.lineWidth = bold ? 2.5 : 1.8;
+    ctx.beginPath();
+    ctx.moveTo(x1, y + 3); ctx.lineTo(x1, y + h - 3);
+    ctx.moveTo(x2, y + 3); ctx.lineTo(x2, y + h - 3);
+    ctx.stroke();
+
+    ctx.lineWidth = bold ? 4 : 3;
+    ctx.beginPath(); ctx.moveTo(xM, y + 1); ctx.lineTo(xM, y + h - 1); ctx.stroke();
+
+    ctx.fillStyle = col;
+    ctx.font = (bold ? 'bold ' : '') + '9px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText(mu.toFixed(0), x2 + 4, midY + 3);
+
+    if (actualV !== null && actualV !== undefined) {
+      const xA = toX(actualV);
+      ctx.save();
+      ctx.shadowColor = 'rgba(255,255,255,0.4)';
+      ctx.shadowBlur = 4;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([2, 2]);
+      ctx.beginPath(); ctx.moveTo(xA, y + 2); ctx.lineTo(xA, y + h - 2); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(xA, midY, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  const d = S.demandFc;
+
+  // Row 0: Total (y=4, h=26)
+  ciRow(4, 26, d.totalLo, d.totalMu, d.totalHi, '#94a3b8', 'Total', true,
+    actualDemand ? actualDemand.total : null);
+
+  // Separator
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([]);
+  ctx.beginPath(); ctx.moveTo(LPAD, 33); ctx.lineTo(W - RPAD + 10, 33); ctx.stroke();
+
+  // Component rows (y=36, 68, 100, 132; h=28 each)
+  d.comps.forEach((c, i) => {
+    const compActual = actualDemand ? actualDemand.comps[i].actual : null;
+    ciRow(36 + i * 32, 28, c.lo, c.mu, c.hi, c.col, c.label, false, compActual);
+  });
+
+  // Env. flow row (fixed = 15, no uncertainty)
+  const envActual = actualDemand !== null ? EFLOW : null;
+  const envY = 132;
+  const envMidY = envY + 14;
+  const xE = toX(EFLOW);
+  ctx.fillStyle = '#64748b';
+  ctx.font = '10px system-ui';
+  ctx.textAlign = 'right';
+  ctx.fillText('Env.', LPAD - 3, envMidY + 3);
+  // Single tick (no CI range — it's fixed)
+  ctx.strokeStyle = '#64748b';
+  ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.moveTo(xE, envY + 2); ctx.lineTo(xE, envY + 26); ctx.stroke();
+  ctx.fillStyle = '#64748b';
+  ctx.font = '9px system-ui';
+  ctx.textAlign = 'left';
+  ctx.fillText(`${EFLOW} (fixed)`, xE + 5, envMidY + 3);
+  // Actual marker (always 15, just confirm it)
+  if (envActual !== null) {
+    ctx.save();
+    ctx.shadowColor = 'rgba(255,255,255,0.4)';
+    ctx.shadowBlur = 4;
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(xE, envMidY, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // X-axis labels
+  ctx.fillStyle = '#475569';
+  ctx.font = '8px system-ui';
+  ctx.textAlign = 'center';
+  ctx.setLineDash([]);
+  for (const v of [10, 20, 30, 40, 50]) {
+    if (v <= maxV) ctx.fillText(v, toX(v), H - 1);
+  }
+}
+
+// ════════════════════════════════════════════════
+// HISTORY CHART
+// ════════════════════════════════════════════════
+const histC = document.getElementById('hist-canvas');
+const histX = histC.getContext('2d');
+
+function drawHistory() {
+  const par = histC.parentElement;
+  histC.width  = par.clientWidth - 20;
+  histC.height = Math.max(40, par.clientHeight - 24);
+  const W = histC.width, H = histC.height;
+  const ctx = histX;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(0, 0, W, H);
+
+  const actuals = S.actualInflows.slice(-24);
+  const fcs     = S.history.slice(-24).map(h => h.fcMu);
+
+  if (actuals.length < 2) {
+    ctx.fillStyle = '#475569';
+    ctx.font = '10px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('No history yet', W / 2, H / 2 + 4);
+    return;
+  }
+
+  const maxV = Math.max(...actuals, ...fcs, 10);
+  const toX  = i => 4 + (i / (actuals.length - 1)) * (W - 8);
+  const toY  = v => H - 4 - (v / maxV) * (H - 8);
+
+  // Forecast line (dashed yellow)
+  ctx.setLineDash([2, 3]);
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  fcs.forEach((v, i) => { i === 0 ? ctx.moveTo(toX(i), toY(v)) : ctx.lineTo(toX(i), toY(v)); });
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Actual inflow area fill
+  ctx.beginPath();
+  actuals.forEach((v, i) => { i === 0 ? ctx.moveTo(toX(i), toY(v)) : ctx.lineTo(toX(i), toY(v)); });
+  const gradH = ctx.createLinearGradient(0, 0, 0, H);
+  gradH.addColorStop(0, 'rgba(59,130,246,.5)');
+  gradH.addColorStop(1, 'rgba(59,130,246,.05)');
+  ctx.lineTo(toX(actuals.length - 1), H);
+  ctx.lineTo(toX(0), H);
+  ctx.closePath();
+  ctx.fillStyle = gradH;
+  ctx.fill();
+
+  // Actual inflow line
+  ctx.strokeStyle = '#3b82f6';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  actuals.forEach((v, i) => { i === 0 ? ctx.moveTo(toX(i), toY(v)) : ctx.lineTo(toX(i), toY(v)); });
+  ctx.stroke();
+
+  // Dots
+  actuals.forEach((v, i) => {
+    ctx.fillStyle = i === actuals.length - 1 ? '#93c5fd' : '#3b82f6';
+    ctx.beginPath();
+    ctx.arc(toX(i), toY(v), i === actuals.length - 1 ? 3 : 2, 0, Math.PI * 2);
+    ctx.fill();
+  });
+}
+
+// ════════════════════════════════════════════════
+// UI HELPERS
+// ════════════════════════════════════════════════
+function zoneColor(id) {
+  return id === 'conserve' ? '#60a5fa'
+       : id === 'flood'    ? '#fbbf24'
+       : id === 'dead'     ? '#fb923c'
+       : '#f87171';
+}
+
+function updateHeader() {
+  document.getElementById('h-week').textContent  = `${S.week} / ${WEEKS}`;
+  document.getElementById('h-stor').textContent  = Math.round(S.storage);
+  document.getElementById('h-score').textContent = S.score;
+  const sea = getSeason(S.week);
+  const el = document.getElementById('h-season');
+  el.textContent = sea.name;
+  el.style.color = sea.col;
+}
+
+function updateStorageCard() {
+  const s = S.storage;
+  const z = getZone(s);
+  const pct = (s / CAP) * 100;
+
+  document.getElementById('res-stor-big').textContent = Math.round(s);
+
+  const bar = document.getElementById('res-bar');
+  bar.style.width = pct + '%';
+  bar.style.background = z.id === 'conserve' ? '#2563eb'
+                       : z.id === 'flood'    ? '#d97706'
+                       : z.id === 'dead'     ? '#7c2d12' : '#dc2626';
+
+  const badge = document.getElementById('res-zone-badge');
+  badge.textContent = z.label;
+  badge.style.background = z.col + '30';
+  badge.style.color  = zoneColor(z.id);
+  badge.style.border = `1px solid ${z.col}60`;
+}
+
+function updateForecastPanels() {
+  document.getElementById('fn-lo').textContent = S.fcLo.toFixed(1);
+  document.getElementById('fn-mu').textContent = S.fcMu.toFixed(1);
+  document.getElementById('fn-hi').textContent = S.fcHi.toFixed(1);
+  if (S.demandFc) {
+    const d = S.demandFc;
+    document.getElementById('dn-lo').textContent = d.totalLo.toFixed(1);
+    document.getElementById('dn-mu').textContent = d.totalMu.toFixed(1);
+    document.getElementById('dn-hi').textContent = d.totalHi.toFixed(1);
+    const [urban, ag, hydro] = d.comps;
+    document.getElementById('dc-urban').textContent = urban.mu.toFixed(1);
+    document.getElementById('dc-ag').textContent    = ag.mu.toFixed(1);
+    document.getElementById('dc-hydro').textContent = hydro.mu.toFixed(1);
+  }
+  drawInflowForecast();
+  drawDemandForecast();
+}
+
+function updateReleasePreview() {
+  const rel  = S.release;
+  const proj = S.storage + S.fcMu - rel;
+  const z    = getZone(proj);
+  const ciLo = Math.round(S.storage + S.fcLo - rel);
+  const ciHi = Math.round(S.storage + S.fcHi - rel);
+
+  document.getElementById('rel-display').textContent = `${rel} units`;
+
+  const pEl = document.getElementById('proj-stor');
+  pEl.textContent = `${Math.round(proj)} units`;
+  pEl.style.fontSize = '1.3rem';
+  pEl.style.fontWeight = '800';
+  pEl.style.color = zoneColor(z.id);
+
+  const zEl = document.getElementById('proj-zone');
+  zEl.textContent = z.label;
+  zEl.style.background = z.col + '30';
+  zEl.style.color  = zoneColor(z.id);
+  zEl.style.border = `1px solid ${z.col}60`;
+
+  document.getElementById('proj-range').textContent = `CI range: ${ciLo} – ${ciHi} units`;
+
+  const warn = document.getElementById('env-warn');
+  const demMu = S.demandFc ? S.demandFc.totalMu : 0;
+  const minReq = Math.round(EFLOW + demMu);
+  if (rel < EFLOW) {
+    warn.style.display = 'block';
+    warn.textContent = `⚠ Below env. flow minimum (${EFLOW}). Max shortfall penalty.`;
+  } else if (rel < minReq) {
+    warn.style.display = 'block';
+    warn.textContent = `⚠ Below forecasted demand (need ~${minReq}). Shortfall penalty likely.`;
+  } else {
+    warn.style.display = 'none';
+  }
+
+  document.getElementById('rel-hints').innerHTML =
+    `Env. flow: ${EFLOW} &nbsp;|&nbsp; Demand: ~${Math.round(demMu)} &nbsp;|&nbsp; Min suggested: ~${minReq}`;
+}
+
+// ════════════════════════════════════════════════
+// PHASE DISPLAY
+// ════════════════════════════════════════════════
+function showDecisionPhase() {
+  // Reset reveal elements
+  document.getElementById('inflow-reveal').style.display = 'none';
+  document.getElementById('demand-reveal').style.display = 'none';
+  document.getElementById('pts-reveal').style.display = 'none';
+  document.getElementById('result-summary-card').style.display = 'none';
+
+  // Clear component actuals
+  ['urban', 'ag', 'hydro', 'env'].forEach(id => {
+    const el = document.getElementById(`da-${id}`);
+    if (el) el.textContent = '';
+  });
+
+  document.getElementById('rel-slider').disabled = false;
+
+  const btn = document.getElementById('action-btn');
+  btn.textContent = 'Release Water →';
+  btn.disabled = false;
+  btn.onclick = onRelease;
+}
+
+function bounceIn(el) {
+  el.style.display = 'block';
+  el.classList.remove('reveal-bounce');
+  void el.offsetWidth;
+  el.classList.add('reveal-bounce');
+}
+
+function showResultPhase(actual, storAfter, pts, breakdown) {
+  document.getElementById('rel-slider').disabled = true;
+  const btn = document.getElementById('action-btn');
+  btn.textContent = S.week > WEEKS ? 'View Results →' : 'Next Week →';
+  btn.disabled = false;
+  btn.onclick = onNextWeek;
+
+  // t=0: Draw inflow canvas with actual marker
+  drawInflowForecast(actual);
+
+  // t=280ms: Bounce in inflow reveal
+  setTimeout(() => {
+    const diff = actual - S.fcMu;
+    const sign = diff >= 0 ? '+' : '';
+    const diffCol = diff > 10 ? '#f59e0b' : diff < -10 ? '#86efac' : '#94a3b8';
+    document.getElementById('inflow-actual-val').textContent = actual.toFixed(1);
+    document.getElementById('inflow-actual-cmp').innerHTML =
+      `<span style="color:${diffCol}">${sign}${diff.toFixed(1)}</span> vs forecast mean`;
+    bounceIn(document.getElementById('inflow-reveal'));
+  }, 280);
+
+  // t=750ms: Draw demand canvas with actual markers + update component labels
+  setTimeout(() => {
+    drawDemandForecast(S.actualDemand);
+    S.actualDemand.comps.forEach(c => {
+      const el = document.getElementById(`da-${c.id}`);
+      if (el) el.textContent = `→ ${c.actual.toFixed(1)}`;
+    });
+    const envEl = document.getElementById('da-env');
+    if (envEl) envEl.textContent = `→ 15.0`;
+  }, 750);
+
+  // t=1050ms: Bounce in demand reveal
+  setTimeout(() => {
+    const ad = S.actualDemand;
+    const minRelease = EFLOW + ad.total;
+    const shortfall = Math.max(0, minRelease - S.release);
+    const sfStr = shortfall > 0
+      ? `<span style="color:#f87171">⚠ ${shortfall.toFixed(1)} short of ${minRelease.toFixed(0)} needed</span>`
+      : `<span style="color:#4ade80">✓ Release covered demand + env. flow</span>`;
+    document.getElementById('demand-actual-val').textContent = ad.total.toFixed(1);
+    document.getElementById('demand-actual-cmp').innerHTML = sfStr;
+    bounceIn(document.getElementById('demand-reveal'));
+  }, 1050);
+
+  // t=1600ms: Flash points + show result summary
+  setTimeout(() => {
+    const ptsEl = document.getElementById('pts-reveal');
+    ptsEl.textContent = (pts >= 0 ? '+' : '') + pts + ' pts';
+    ptsEl.style.color = pts > 0 ? '#4ade80' : pts < 0 ? '#f87171' : '#94a3b8';
+    ptsEl.classList.remove('pts-flash-anim');
+    void ptsEl.offsetWidth;
+    ptsEl.classList.add('pts-flash-anim');
+    ptsEl.style.display = 'block';
+
+    document.getElementById('r-stor').textContent =
+      `${Math.round(S.history[S.history.length-1].storBefore)} → ${Math.round(storAfter)} [${getZone(storAfter).label}]`;
+    document.getElementById('r-breakdown').innerHTML = breakdown.map(b => `• ${b}`).join('<br>');
+    document.getElementById('result-summary-card').style.display = 'block';
+  }, 1600);
+}
+
+function addLogRow(entry) {
+  const log = document.getElementById('log-rows');
+  const pts = entry.pts;
+  const cls = pts > 0 ? 'pos' : pts < 0 ? 'neg' : 'zer';
+  const div = document.createElement('div');
+  div.className = 'log-row';
+  div.innerHTML = `
+    <span class="log-wk">Wk ${entry.week}</span>
+    <span class="log-txt">
+      In: ${entry.actual.toFixed(1)} (fc ${entry.fcMu.toFixed(1)}) &nbsp;|&nbsp;
+      Rel: ${entry.rel} &nbsp;|&nbsp;
+      ${Math.round(entry.storBefore)} → ${Math.round(entry.storAfter)} [${getZone(entry.storAfter).label}]
+    </span>
+    <span class="log-pts ${cls}">${pts >= 0 ? '+' : ''}${pts}</span>`;
+  log.insertBefore(div, log.firstChild);
+}
+
+// ════════════════════════════════════════════════
+// GAME FLOW
+// ════════════════════════════════════════════════
+function startWeek() {
+  S.phase = 'decision';
+
+  const fc = makeForecast(S.week);
+  S.fcMu = fc.mu; S.fcSd = fc.sd;
+  S.fcLo = fc.lo; S.fcHi = fc.hi;
+  S.demandFc = makeDemandForecast(S.week);
+
+  document.getElementById('rel-slider').value = S.release;
+
+  updateHeader();
+  updateStorageCard();
+  updateForecastPanels();
+  updateReleasePreview();
+  drawHistory();
+  showDecisionPhase();
+}
+
+function onRelease() {
+  if (S.phase !== 'decision') return;
+  S.phase = 'result';
+
+  const rel    = S.release;
+  const actual = sampleInflow(S.fcMu, S.fcSd);
+  const storB  = S.storage;
+  let   storA  = Math.min(CAP, Math.max(0, storB + actual - rel));
+
+  S.storage = storA;
+  S.actualInflows.push(actual);
+  S.actualDemand = sampleActualDemand(S.demandFc);
+
+  const { pts, breakdown } = calcScore(storA, rel, S.actualDemand.total);
+  S.score += pts;
+
+  const entry = { week: S.week, rel, fcMu: S.fcMu, actual, storBefore: storB, storAfter: storA, pts, demandTotal: S.actualDemand.total };
+  S.history.push(entry);
+  addLogRow(entry);
+
+  updateHeader();
+  updateStorageCard();
+  drawHistory();
+  showResultPhase(actual, storA, pts, breakdown);
+}
+
+function onNextWeek() {
+  if (S.week >= WEEKS) {
+    showGameOver();
+    return;
+  }
+  S.week++;
+  startWeek();
+}
+
+// ════════════════════════════════════════════════
+// GAME OVER
+// ════════════════════════════════════════════════
+function showGameOver() {
+  const sc = S.score;
+  const grade = sc >= 800 ? 'A+' : sc >= 650 ? 'A' : sc >= 500 ? 'B'
+              : sc >= 350 ? 'C'  : sc >= 175 ? 'D' : 'F';
+
+  const wksConserve  = S.history.filter(h => getZone(h.storAfter).id === 'conserve').length;
+  const wksDanger    = S.history.filter(h => ['dead','surge'].includes(getZone(h.storAfter).id)).length;
+  const avgErr       = (S.history.reduce((a,h) => a + Math.abs(h.actual - h.fcMu), 0) / S.history.length).toFixed(1);
+  const shortfallWks = S.history.filter(h => h.rel < EFLOW + (h.demandTotal || 0)).length;
+
+  document.getElementById('go-score').textContent = sc;
+  document.getElementById('go-grade').textContent = `Grade: ${grade}`;
+  document.getElementById('go-wks-conserve').textContent = `${wksConserve} / ${WEEKS}`;
+  document.getElementById('go-wks-danger').textContent   = wksDanger;
+  document.getElementById('go-avg-err').textContent      = avgErr;
+  document.getElementById('go-env-viol').textContent     = shortfallWks;
+
+  const msg = sc >= 550
+    ? 'Outstanding management! You balanced inflow uncertainty, seasonal demand swings, and storage targets across a full water year — that\'s genuine skill.'
+    : sc >= 350
+    ? 'Solid effort. The demand-inflow trade-off is tricky: try building higher storage through spring so summer agriculture demand doesn\'t drain you into the dead pool.'
+    : 'Tough year. Key insight: agricultural demand peaks in summer just as inflows drop. Enter summer with storage near 500–580 so you have carryover. Ration demands during severe droughts rather than releasing everything and crashing storage.';
+
+  document.getElementById('go-msg').innerHTML = `<p>${msg}</p>`;
+  document.getElementById('gameover').classList.remove('hidden');
+}
+
+// ════════════════════════════════════════════════
+// EVENTS
+// ════════════════════════════════════════════════
+document.getElementById('rel-slider').addEventListener('input', e => {
+  S.release = parseInt(e.target.value, 10);
+  updateReleasePreview();
+});
+
+document.getElementById('start-btn').addEventListener('click', () => {
+  document.getElementById('welcome').classList.add('hidden');
+  resetState();
+  startWeek();
+  startAnim();
+});
+
+document.getElementById('restart-btn').addEventListener('click', () => {
+  document.getElementById('gameover').classList.add('hidden');
+  document.getElementById('log-rows').innerHTML = '';
+  resetState();
+  startWeek();
+});
+
+// ════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════
+window.addEventListener('resize', () => {
+  resizeResCanvas();
+  if (S.week) {
+    const inActual = S.phase === 'result' ? S.actualInflows[S.actualInflows.length - 1] : null;
+    const dmActual = S.phase === 'result' ? S.actualDemand : null;
+    drawInflowForecast(inActual);
+    drawDemandForecast(dmActual);
+    drawHistory();
+  }
+});
+
+resetState();
+resizeResCanvas();
+</script>
+</body>
+</html>
