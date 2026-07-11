@@ -257,7 +257,7 @@
     #hist-canvas { display: block; width: 100%; flex: 1; min-height: 0; border-radius: 4px; }
 
     /* ── CONTROL PANEL ──────────────────────────────────────── */
-    .ctrl { flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
+    .ctrl { flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; position: relative; }
 
     .slider-lbl {
       display: flex;
@@ -308,6 +308,29 @@
       color: var(--ylw);
       display: none;
     }
+
+    #flood-watch {
+      display: none;
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 58px;
+      z-index: 2;
+      background: linear-gradient(135deg, rgba(127,29,29,.9), rgba(194,65,12,.72));
+      border: 1px solid #f97316;
+      border-radius: 6px;
+      padding: 7px 8px;
+      color: #ffedd5;
+      box-shadow: 0 0 16px rgba(249,115,22,.22);
+    }
+    #flood-watch.active { display: block; animation: flood-watch-pulse 1.35s ease-in-out infinite; }
+    @keyframes flood-watch-pulse {
+      0%,100% { border-color:#f97316; box-shadow:0 0 10px rgba(249,115,22,.2); }
+      50% { border-color:#fef08a; box-shadow:0 0 22px rgba(251,191,36,.55); }
+    }
+    .flood-watch-title { font-size:.7rem; font-weight:900; letter-spacing:.06em; }
+    .flood-watch-msg { font-size:.63rem; line-height:1.3; margin-top:3px; }
+    .flood-watch-stats { font-size:.6rem; color:#fed7aa; margin-top:4px; line-height:1.35; }
 
     /* Result summary shown after release */
     #result-summary-card {
@@ -411,6 +434,20 @@
     }
     .mbody strong { color: var(--text); }
     .mbody p { margin-bottom: 10px; }
+
+    .feature-options {
+      display: grid;
+      gap: 7px;
+      background: var(--bg3);
+      border: 1px solid var(--bord);
+      border-radius: 7px;
+      padding: 10px;
+      margin: 12px 0 16px;
+    }
+    .feature-options-title { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--mute); }
+    .feature-option { display: flex; gap: 8px; align-items: flex-start; font-size: .76rem; line-height: 1.3; color: var(--text); cursor: pointer; }
+    .feature-option input { margin-top: 2px; accent-color: var(--blue); }
+    .feature-option small { display: block; color: var(--mute); font-size: .65rem; margin-top: 1px; }
 
     .zone-tbl {
       width: 100%;
@@ -571,10 +608,19 @@
         <tr><td style="color:#a78bfa">Urban water supply</td><td>Peaks in summer (wk 30)</td><td>5 – 15 units/wk</td></tr>
         <tr><td style="color:#4ade80">Agriculture (irrigation)</td><td>Peaks early summer (wk 26), near zero in winter</td><td>0 – 25 units/wk</td></tr>
         <tr><td style="color:#fbbf24">Hydroelectric</td><td>Peaks in winter (wk 4)</td><td>2 – 14 units/wk</td></tr>
-        <tr><td style="color:#64748b">Environmental flow</td><td>Year-round (fixed)</td><td>15 units/wk</td></tr>
+        <tr><td style="color:#64748b">Environmental flow</td><td>Baseflow year-round; spawning and migration pulses</td><td>13 – 27 units/wk</td></tr>
       </table>
+      <p><strong>Environmental-flow regime:</strong> every week includes 9 units of <em>baseflow</em> to maintain habitat and 4 units of <em>subsistence flow</em> for connected refuges and downstream basic needs. Short, higher <em>pulse flows</em> are scheduled for fish spawning (weeks 15–20) and bird migration (weeks 10–13 and 40–44); their timing is known in the forecast, while the needed pulse magnitude has modest uncertainty.</p>
+      <p><strong>Flood watches:</strong> when the inflow forecast signals a major storm, a flood card shows the chance of reaching the flood-control pool and the downstream safe-release limit. During these events, storm runoff replaces scheduled environmental baseflow. Finish in the conservation pool without exceeding the channel limit to earn a flood-operation bonus; excessive releases flood the valley, while surcharge storage still ends the game.</p>
       <p>Rationing is sometimes the right call — draining storage to dead pool costs far more than a modest shortfall penalty. But chronic under-delivery is expensive too.</p>
-      <p><strong>Tip:</strong> Build up storage in spring (weeks 14–26) so you have carryover for the summer demand peak. Inflow collapses just as agriculture demand spikes — that squeeze is the hardest part of the game.</p>
+      <p><strong>Tip:</strong> If snowmelt is enabled, spring inflow (weeks 14–26) includes a runoff surge that peaks in mid-spring. Capture enough for summer demand, while preserving flood space if a storm arrives on top of the melt.</p>
+
+      <div class="feature-options" aria-label="Water year options">
+        <div class="feature-options-title">Water year options</div>
+        <label class="feature-option"><input id="opt-snowmelt" type="checkbox" checked><span>Spring snowmelt runoff<small>Adds a gradual mid-spring runoff surge.</small></span></label>
+        <label class="feature-option"><input id="opt-atmrivers" type="checkbox" checked><span>Atmospheric rivers<small>Allows rare named extreme-storm flood events.</small></span></label>
+        <label class="feature-option"><input id="opt-envflows" type="checkbox" checked><span>Environmental flows<small>Includes baseflow, subsistence flow, and ecological pulse demand.</small></span></label>
+      </div>
     </div>
     <button class="mbtn" id="start-btn">Begin Water Year →</button>
   </div>
@@ -720,7 +766,7 @@
   <div class="panel">
     <div class="ptitle">Demand Forecast &nbsp;<span style="font-size:0.58rem;opacity:.6">(95% CI)</span></div>
 
-    <canvas id="demand-canvas" height="175"></canvas>
+    <canvas id="demand-canvas" height="205"></canvas>
 
     <div id="demand-reveal" class="reveal-block" style="display:none">
       <div class="reveal-label">Actual Demand</div>
@@ -759,9 +805,9 @@
         <div class="dcomp-fc" style="color:#fbbf24" id="dc-hydro">—</div>
         <div class="dcomp-actual" style="color:#fbbf24" id="da-hydro"></div>
       </div>
-      <div class="dcomp">
-        <div class="dcomp-lbl" style="color:#64748b">Env. Flow</div>
-        <div class="dcomp-fc" style="color:#64748b" id="dc-env">15 <span style="font-size:0.6rem;opacity:.7">(fixed)</span></div>
+      <div class="dcomp" id="dcomp-env">
+        <div class="dcomp-lbl" style="color:#64748b" id="dc-env-label">Env. Flow</div>
+        <div class="dcomp-fc" style="color:#64748b" id="dc-env">—</div>
         <div class="dcomp-actual" style="color:#64748b" id="da-env"></div>
       </div>
     </div>
@@ -778,7 +824,7 @@
       </div>
       <input type="range" id="rel-slider" min="0" max="250" value="50" step="1">
       <div class="rel-hints" id="rel-hints">
-        Min env. flow: 15 units<br>
+        Environmental flow: —<br>
         Max physical: 250 units
       </div>
     </div>
@@ -791,6 +837,12 @@
     </div>
 
     <div id="env-warn">⚠ placeholder</div>
+
+    <div id="flood-watch" aria-live="polite">
+      <div class="flood-watch-title" id="flood-watch-title">⚠ FLOOD WATCH</div>
+      <div class="flood-watch-msg" id="flood-watch-msg"></div>
+      <div class="flood-watch-stats" id="flood-watch-stats"></div>
+    </div>
 
     <div id="result-summary-card">
       <div id="r-stor">—</div>
@@ -821,15 +873,25 @@ const DPOOL = 100;
 const CTOP  = 600;
 const FTOP  = 850;
 const CTGT  = 350;
-const EFLOW = 15;
 const MAXRL = 250;
 const WEEKS = 52;
+const FLOOD_SPACE_TARGET = 560;
 
 const DEMAND_COMPS = [
   { id:'urban', label:'Urban', col:'#a78bfa', peakWk:30, base:10, amp: 5, cv:0.12 },
   { id:'ag',    label:'Ag.',   col:'#4ade80', peakWk:26, base: 0, amp:25, cv:0.22 },
   { id:'hydro', label:'Hydro', col:'#fbbf24', peakWk: 4, base: 8, amp: 6, cv:0.18 },
 ];
+
+// Ecological releases are a demand, not an optional add-on. Baseflow maintains
+// channel habitat, subsistence flow keeps refuges and downstream basic uses
+// connected, and short pulses cue life-cycle events when they are most useful.
+const ENV_FLOW = {
+  id: 'env', label: 'Env.', col: '#64748b',
+  baseflow: 9,
+  subsistence: 4,
+  cv: 0.10,
+};
 
 const ZONES = [
   { id:'dead',     label:'Dead Pool',          min:0,     max:DPOOL, pts:-60, col:'#7c2d12' },
@@ -850,6 +912,14 @@ const SEASONS = [
 // ════════════════════════════════════════════════
 let S = {};
 
+function selectedFeatures() {
+  return {
+    snowmelt: document.getElementById('opt-snowmelt').checked,
+    atmosphericRivers: document.getElementById('opt-atmrivers').checked,
+    environmentalFlows: document.getElementById('opt-envflows').checked,
+  };
+}
+
 function resetState() {
   S = {
     week: 1,
@@ -860,6 +930,8 @@ function resetState() {
     fcMu: 0, fcSd: 0, fcLo: 0, fcHi: 0,
     demandFc: null,
     actualDemand: null,
+    floodEvent: null,
+    features: selectedFeatures(),
     phase: 'decision',
     release: 50,
   };
@@ -869,14 +941,60 @@ function resetState() {
 // HYDROLOGY
 // ════════════════════════════════════════════════
 function seasonalMean(week) {
+  // Seasonal rainfall/base runoff plus a distinct snowmelt hydrograph. The
+  // melt rises gradually as temperatures warm, peaks in mid-spring, then
+  // tapers instead of behaving like an abrupt one-week pulse.
   const angle = ((week - 16) / WEEKS) * 2 * Math.PI;
-  return Math.max(6, 58 + 52 * Math.cos(angle));
+  const baseRunoff = 58 + 40 * Math.cos(angle);
+  const snowmelt = S.features?.snowmelt
+    ? 34 * Math.exp(-0.5 * Math.pow((week - 19) / 4.2, 2))
+    : 0;
+  return Math.max(6, baseRunoff + snowmelt);
 }
 
 function makeForecast(week) {
   const mu = seasonalMean(week);
   const sd = mu * 0.42;
   return { mu, sd, lo: Math.max(0, mu - 1.96 * sd), hi: mu + 1.96 * sd };
+}
+
+function floodProbability(threshold, mu, sd) {
+  // A transparent approximation using the displayed 95% interval: 50% at
+  // the mean, 2.5% at the upper 95% bound, and 97.5% at the lower bound.
+  const span = Math.max(1, 1.96 * sd);
+  if (threshold >= mu) return Math.max(.025, .5 - .475 * Math.min(1, (threshold - mu) / span));
+  return Math.min(.975, .5 + .475 * Math.min(1, (mu - threshold) / span));
+}
+
+function makeFloodEvent(fc) {
+  // A few named storms are deliberately extreme; otherwise a watch is based
+  // on the forecast chance of entering flood-control storage with no release.
+  const forcedStorm = S.features.atmosphericRivers && fc.mu >= 50 && Math.random() < 0.055;
+  if (forcedStorm) {
+    const multiplier = 1.45 + Math.random() * .35;
+    fc.mu *= multiplier;
+    fc.sd *= 1.12;
+    fc.lo = Math.max(0, fc.mu - 1.96 * fc.sd);
+    fc.hi = fc.mu + 1.96 * fc.sd;
+  }
+  const probability = floodProbability(CTOP - S.storage, fc.mu, fc.sd);
+  const isWatch = forcedStorm || probability >= .15;
+  if (!isWatch) return null;
+  const stormBypass = forcedStorm || (fc.mu >= 105 && probability >= .25);
+
+  const safeRelease = forcedStorm ? 90 : 75;
+  const targetRelease = Math.max(0, Math.ceil(S.storage + fc.mu - FLOOD_SPACE_TARGET));
+  return {
+    forcedStorm,
+    probability,
+    stormBypass,
+    safeRelease,
+    targetRelease,
+    title: forcedStorm ? '⚠ ATMOSPHERIC RIVER — FLOOD WATCH' : '⚠ FLOOD WATCH — HEAVY RUNOFF',
+    message: forcedStorm
+      ? 'A wall of water is headed for the reservoir. Make room, but do not turn the valley into a spillway.'
+      : 'Forecast runoff could push the reservoir into flood-control storage. Create space without exceeding channel capacity.',
+  };
 }
 
 function sampleInflow(mu, sd) {
@@ -894,12 +1012,53 @@ function demandCompMean(week, c) {
   return Math.max(0, c.base + c.amp * Math.cos(angle));
 }
 
-function makeDemandForecast(week) {
-  const comps = DEMAND_COMPS.map(c => {
+function environmentalFlowNeed(week, floodEvent = null) {
+  // Pulses are deliberately brief and aligned to ecology rather than simply
+  // tracking season: fish need a sustained spring cue; migrants benefit from
+  // smaller spring/fall inundation pulses. Outside those windows, the durable
+  // baseflow + subsistence allocation is the environmental requirement.
+  if (floodEvent?.stormBypass) {
+    return {
+      ...ENV_FLOW, baseflow: 0, subsistence: 0, pulse: 0,
+      scenario: 'storm operations — runoff satisfies environmental flow',
+      mu: 0,
+    };
+  }
+  let pulse = 0;
+  let scenario = 'baseflow + subsistence';
+  if (week >= 15 && week <= 20) {
+    pulse = (week === 15 || week === 20) ? 7 : 14;
+    scenario = 'fish spawning pulse';
+  } else if ((week >= 10 && week <= 13) || (week >= 40 && week <= 44)) {
+    pulse = (week === 10 || week === 13 || week === 40 || week === 44) ? 4 : 7;
+    scenario = week <= 13 ? 'spring bird migration pulse' : 'fall bird migration pulse';
+  }
+  return {
+    ...ENV_FLOW,
+    baseflow: ENV_FLOW.baseflow,
+    subsistence: ENV_FLOW.subsistence,
+    pulse,
+    scenario,
+    mu: ENV_FLOW.baseflow + ENV_FLOW.subsistence + pulse,
+  };
+}
+
+function makeDemandForecast(week, floodEvent = null) {
+  const humanComps = DEMAND_COMPS.map(c => {
     const mu = demandCompMean(week, c);
     const sd = mu * c.cv;
     return { ...c, mu, sd, lo: Math.max(0, mu - 1.96 * sd), hi: mu + 1.96 * sd };
   });
+  const comps = [...humanComps];
+  if (S.features.environmentalFlows) {
+    const env = environmentalFlowNeed(week, floodEvent);
+    // The ecological calendar is known, but field conditions can shift the
+    // necessary pulse slightly; this is intentionally less uncertain than use.
+    env.sd = env.pulse ? Math.max(1, env.mu * env.cv) : 0;
+    env.lo = Math.max(0, env.mu - 1.96 * env.sd);
+    env.hi = env.mu + 1.96 * env.sd;
+    comps.push(env);
+  }
   const totalMu = comps.reduce((s, c) => s + c.mu, 0);
   const totalSd = Math.sqrt(comps.reduce((s, c) => s + c.sd * c.sd, 0));
   return { comps, totalMu, totalSd,
@@ -932,7 +1091,7 @@ function getSeason(week) {
 // ════════════════════════════════════════════════
 // SCORING
 // ════════════════════════════════════════════════
-function calcScore(stor, release, actualDemandTotal) {
+function calcScore(stor, release, actualDemandTotal, floodEvent = null) {
   const zone = getZone(stor);
   let pts = zone.pts;
   let breakdown = [];
@@ -957,14 +1116,28 @@ function calcScore(stor, release, actualDemandTotal) {
     breakdown.push(`${zone.label} ${zone.pts > 0 ? '+' : ''}${zone.pts}`);
   }
 
-  const totalRequired = EFLOW + actualDemandTotal;
+  const totalRequired = actualDemandTotal;
   const shortfall = Math.max(0, totalRequired - release);
   if (shortfall > 0) {
     // ~−1 pt per 4 units short, minimum −2 (units are abstract, ~TAF scale)
     const sfPts = -Math.max(2, Math.round(shortfall / 4));
     pts += sfPts;
-    const who = release < EFLOW ? 'env. flow + demand' : 'demand';
-    breakdown.push(`${who} shortfall ${shortfall.toFixed(0)} units ${sfPts}`);
+    breakdown.push(`total demand shortfall ${shortfall.toFixed(0)} units ${sfPts}`);
+  }
+
+  if (floodEvent) {
+    const downstreamExcess = Math.max(0, release - floodEvent.safeRelease);
+    if (downstreamExcess > 0) {
+      const floodPts = -Math.max(8, Math.round(downstreamExcess / 3));
+      pts += floodPts;
+      breakdown.push(`downstream flood release +${downstreamExcess.toFixed(0)} over channel limit ${floodPts}`);
+    } else if (stor >= DPOOL && stor <= CTOP) {
+      pts += 15;
+      breakdown.push('flood operation: protected valley +15');
+    } else if (stor < FTOP) {
+      pts += 5;
+      breakdown.push('flood operation: held flood-control pool +5');
+    }
   }
 
   return { pts, breakdown };
@@ -1245,8 +1418,8 @@ const demandX = demandC.getContext('2d');
 function drawDemandForecast(actualDemand = null) {
   if (!S.demandFc) return;
   demandC.width = demandC.parentElement.clientWidth - 24;
-  demandC.height = 175;
-  const W = demandC.width, H = 175;
+  demandC.height = 205;
+  const W = demandC.width, H = 205;
   const ctx = demandX;
 
   ctx.clearRect(0, 0, W, H);
@@ -1331,40 +1504,11 @@ function drawDemandForecast(actualDemand = null) {
   ctx.setLineDash([]);
   ctx.beginPath(); ctx.moveTo(LPAD, 33); ctx.lineTo(W - RPAD + 10, 33); ctx.stroke();
 
-  // Component rows (y=36, 68, 100, 132; h=28 each)
+  // Component rows, including ecological release as a total-demand component.
   d.comps.forEach((c, i) => {
     const compActual = actualDemand ? actualDemand.comps[i].actual : null;
     ciRow(36 + i * 32, 28, c.lo, c.mu, c.hi, c.col, c.label, false, compActual);
   });
-
-  // Env. flow row (fixed = 15, no uncertainty)
-  const envActual = actualDemand !== null ? EFLOW : null;
-  const envY = 132;
-  const envMidY = envY + 14;
-  const xE = toX(EFLOW);
-  ctx.fillStyle = '#64748b';
-  ctx.font = '10px system-ui';
-  ctx.textAlign = 'right';
-  ctx.fillText('Env.', LPAD - 3, envMidY + 3);
-  // Single tick (no CI range — it's fixed)
-  ctx.strokeStyle = '#64748b';
-  ctx.lineWidth = 4;
-  ctx.beginPath(); ctx.moveTo(xE, envY + 2); ctx.lineTo(xE, envY + 26); ctx.stroke();
-  ctx.fillStyle = '#64748b';
-  ctx.font = '9px system-ui';
-  ctx.textAlign = 'left';
-  ctx.fillText(`${EFLOW} (fixed)`, xE + 5, envMidY + 3);
-  // Actual marker (always 15, just confirm it)
-  if (envActual !== null) {
-    ctx.save();
-    ctx.shadowColor = 'rgba(255,255,255,0.4)';
-    ctx.shadowBlur = 4;
-    ctx.fillStyle = '#ffffff';
-    ctx.beginPath();
-    ctx.arc(xE, envMidY, 3.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
 
   // X-axis labels
   ctx.fillStyle = '#475569';
@@ -1557,10 +1701,20 @@ function updateForecastPanels() {
     document.getElementById('dn-lo').textContent = d.totalLo.toFixed(1);
     document.getElementById('dn-mu').textContent = d.totalMu.toFixed(1);
     document.getElementById('dn-hi').textContent = d.totalHi.toFixed(1);
-    const [urban, ag, hydro] = d.comps;
+    const [urban, ag, hydro, env] = d.comps;
     document.getElementById('dc-urban').textContent = urban.mu.toFixed(1);
     document.getElementById('dc-ag').textContent    = ag.mu.toFixed(1);
     document.getElementById('dc-hydro').textContent = hydro.mu.toFixed(1);
+    const envCard = document.getElementById('dcomp-env');
+    envCard.style.display = env ? '' : 'none';
+    if (env) {
+      document.getElementById('dc-env').textContent = env.mu.toFixed(1);
+      document.getElementById('dc-env-label').textContent = env.mu === 0
+        ? 'Env. storm bypass'
+        : env.pulse
+        ? `Env. ${env.scenario.replace(' pulse', '')}`
+        : 'Env. base + subsistence';
+    }
   }
   drawInflowForecast();
   drawDemandForecast();
@@ -1591,19 +1745,50 @@ function updateReleasePreview() {
 
   const warn = document.getElementById('env-warn');
   const demMu = S.demandFc ? S.demandFc.totalMu : 0;
-  const minReq = Math.round(EFLOW + demMu);
-  if (rel < EFLOW) {
+  const minReq = Math.round(demMu);
+  const env = S.demandFc ? S.demandFc.comps.find(c => c.id === 'env') : null;
+  const flood = S.floodEvent;
+  if (flood && rel > flood.safeRelease) {
     warn.style.display = 'block';
-    warn.textContent = `⚠ Below env. flow minimum (${EFLOW}). Max shortfall penalty.`;
+    warn.textContent = `⚠ Above downstream safe-release limit (${flood.safeRelease}). Valley flooding penalty likely.`;
   } else if (rel < minReq) {
     warn.style.display = 'block';
     warn.textContent = `⚠ Below forecasted demand (need ~${minReq}). Shortfall penalty likely.`;
+  } else if (flood && flood.targetRelease <= flood.safeRelease && rel < flood.targetRelease) {
+    warn.style.display = 'block';
+    warn.textContent = `⚠ Flood watch: ~${flood.targetRelease} release targets flood space at mean inflow.`;
   } else {
     warn.style.display = 'none';
   }
 
+  const floodHint = !flood ? ''
+    : flood.targetRelease <= flood.safeRelease
+      ? `<br>Flood safe band: ${flood.targetRelease}–${flood.safeRelease}`
+      : `<br>Flood conflict: keep release ≤${flood.safeRelease} to protect the valley`;
   document.getElementById('rel-hints').innerHTML =
-    `Env. flow: ${EFLOW} &nbsp;|&nbsp; Demand: ~${Math.round(demMu)} &nbsp;|&nbsp; Min suggested: ~${minReq}`;
+    `Env.: ~${env ? Math.round(env.mu) : 0} (${env ? env.scenario : '—'}) &nbsp;|&nbsp; Total: ~${Math.round(demMu)} &nbsp;|&nbsp; Min suggested: ~${minReq}` +
+    floodHint;
+}
+
+function updateFloodWatch() {
+  const card = document.getElementById('flood-watch');
+  const flood = S.floodEvent;
+  card.classList.toggle('active', Boolean(flood));
+  if (!flood) return;
+  document.getElementById('flood-watch-title').textContent = flood.title;
+  document.getElementById('flood-watch-msg').textContent = flood.message;
+  const operatingBand = flood.targetRelease <= flood.safeRelease
+    ? `Safe operating band: ${flood.targetRelease}–${flood.safeRelease}`
+    : `Conflicting objectives: hold release ≤${flood.safeRelease} to protect the valley`;
+  const envNote = !S.features.environmentalFlows
+    ? 'Environmental-flow feature is off.'
+    : flood.stormBypass
+      ? 'Environmental baseflow suspended: storm runoff is providing it.'
+      : 'Environmental baseflow remains scheduled until storm runoff is certain.';
+  document.getElementById('flood-watch-stats').innerHTML =
+    `${Math.round(flood.probability * 100)}% chance of flood-control storage without release<br>` +
+    `${operatingBand}<br>` +
+    envNote;
 }
 
 // ════════════════════════════════════════════════
@@ -1638,6 +1823,8 @@ function bounceIn(el) {
 }
 
 function showResultPhase(actual, storAfter, pts, breakdown) {
+  // The alert is decision guidance; clear it so the result remains readable.
+  document.getElementById('flood-watch').classList.remove('active');
   document.getElementById('rel-slider').disabled = true;
   const btn = document.getElementById('action-btn');
   btn.textContent = S.week > WEEKS ? 'View Results →' : 'Next Week →';
@@ -1665,18 +1852,16 @@ function showResultPhase(actual, storAfter, pts, breakdown) {
       const el = document.getElementById(`da-${c.id}`);
       if (el) el.textContent = `→ ${c.actual.toFixed(1)}`;
     });
-    const envEl = document.getElementById('da-env');
-    if (envEl) envEl.textContent = `→ 15.0`;
   }, 750);
 
   // t=1050ms: Bounce in demand reveal
   setTimeout(() => {
     const ad = S.actualDemand;
-    const minRelease = EFLOW + ad.total;
+    const minRelease = ad.total;
     const shortfall = Math.max(0, minRelease - S.release);
     const sfStr = shortfall > 0
       ? `<span style="color:#f87171">⚠ ${shortfall.toFixed(1)} short of ${minRelease.toFixed(0)} needed</span>`
-      : `<span style="color:#4ade80">✓ Release covered demand + env. flow</span>`;
+      : `<span style="color:#4ade80">✓ Release covered all demand, including environmental flow</span>`;
     document.getElementById('demand-actual-val').textContent = ad.total.toFixed(1);
     document.getElementById('demand-actual-cmp').innerHTML = sfStr;
     bounceIn(document.getElementById('demand-reveal'));
@@ -1710,7 +1895,7 @@ function addLogRow(entry) {
     <span class="log-txt">
       In: ${entry.actual.toFixed(1)} (fc ${entry.fcMu.toFixed(1)}) &nbsp;|&nbsp;
       Rel: ${entry.rel} &nbsp;|&nbsp;
-      ${Math.round(entry.storBefore)} → ${Math.round(entry.storAfter)} [${getZone(entry.storAfter).label}]
+      ${Math.round(entry.storBefore)} → ${Math.round(entry.storAfter)} [${getZone(entry.storAfter).label}]${entry.floodEvent ? ' &nbsp;⚠ flood watch' : ''}
     </span>
     <span class="log-pts ${cls}">${pts >= 0 ? '+' : ''}${pts}</span>`;
   log.insertBefore(div, log.firstChild);
@@ -1723,15 +1908,17 @@ function startWeek() {
   S.phase = 'decision';
 
   const fc = makeForecast(S.week);
+  S.floodEvent = makeFloodEvent(fc);
   S.fcMu = fc.mu; S.fcSd = fc.sd;
   S.fcLo = fc.lo; S.fcHi = fc.hi;
-  S.demandFc = makeDemandForecast(S.week);
+  S.demandFc = makeDemandForecast(S.week, S.floodEvent);
 
   document.getElementById('rel-slider').value = S.release;
 
   updateHeader();
   updateStorageCard();
   updateForecastPanels();
+  updateFloodWatch();
   updateReleasePreview();
   drawHistory();
   showDecisionPhase();
@@ -1750,10 +1937,10 @@ function onRelease() {
   S.actualInflows.push(actual);
   S.actualDemand = sampleActualDemand(S.demandFc);
 
-  const { pts, breakdown } = calcScore(storA, rel, S.actualDemand.total);
+  const { pts, breakdown } = calcScore(storA, rel, S.actualDemand.total, S.floodEvent);
   S.score += pts;
 
-  const entry = { week: S.week, rel, fcMu: S.fcMu, actual, storBefore: storB, storAfter: storA, pts, demandTotal: S.actualDemand.total };
+  const entry = { week: S.week, rel, fcMu: S.fcMu, actual, storBefore: storB, storAfter: storA, pts, demandTotal: S.actualDemand.total, floodEvent: S.floodEvent };
   S.history.push(entry);
   addLogRow(entry);
 
@@ -1805,7 +1992,7 @@ function showFloodResult(actual, storAfter, pts, breakdown) {
 function showFloodGameOver(storAfter) {
   const sc = S.score;
   const wksConserve  = S.history.filter(h => getZone(h.storAfter).id === 'conserve').length;
-  const shortfallWks = S.history.filter(h => h.rel < EFLOW + (h.demandTotal || 0)).length;
+  const shortfallWks = S.history.filter(h => h.rel < (h.demandTotal || 0)).length;
 
   document.getElementById('flood-score').textContent = sc;
   document.getElementById('flood-week').textContent  = `Failed on Week ${S.week} of ${WEEKS}`;
@@ -1828,7 +2015,7 @@ function showGameOver() {
   const wksConserve  = S.history.filter(h => getZone(h.storAfter).id === 'conserve').length;
   const wksDanger    = S.history.filter(h => ['dead','surge'].includes(getZone(h.storAfter).id)).length;
   const avgErr       = (S.history.reduce((a,h) => a + Math.abs(h.actual - h.fcMu), 0) / S.history.length).toFixed(1);
-  const shortfallWks = S.history.filter(h => h.rel < EFLOW + (h.demandTotal || 0)).length;
+  const shortfallWks = S.history.filter(h => h.rel < (h.demandTotal || 0)).length;
 
   document.getElementById('go-score').textContent = sc;
   document.getElementById('go-grade').textContent = `Grade: ${grade}`;
