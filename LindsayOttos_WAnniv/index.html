@@ -111,20 +111,54 @@
       border-radius: 4px;
     }
     .res-bar-wrap {
-      height: 10px;
-      background: var(--bg);
-      border-radius: 5px;
+      height: 14px;
+      border-radius: 7px;
       overflow: hidden;
+      position: relative;
+      /* Zone color segments: dead 0-10%, conservation 10-60%, flood 60-85%, surge 85-100% */
+      background: linear-gradient(to right,
+        #92400e 0% 10%,
+        #1d4ed8 10% 60%,
+        #b45309 60% 85%,
+        #991b1b 85% 100%
+      );
     }
     #res-bar {
+      position: absolute;
+      right: 0; top: 0;
       height: 100%;
-      border-radius: 5px;
-      transition: width 0.6s ease, background 0.4s ease;
+      background: rgba(15,23,42,.8);
+      transition: width 0.6s ease;
+      border-radius: 0 7px 7px 0;
+    }
+    #res-bar-tick {
+      position: absolute;
+      top: 0; height: 100%;
+      width: 3px;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 0 5px rgba(255,255,255,.55);
+      transform: translateX(-50%);
+      transition: left 0.6s ease;
+      pointer-events: none;
+    }
+    .res-zone-row {
+      position: relative;
+      height: 13px;
+      margin-top: 2px;
+    }
+    .zlab {
+      position: absolute;
+      font-size: 0.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      transform: translateX(-50%);
+      white-space: nowrap;
     }
     .res-ruler {
       position: relative;
-      height: 14px;
-      margin-top: 3px;
+      height: 12px;
+      margin-top: 1px;
     }
     .zmark {
       position: absolute;
@@ -414,6 +448,87 @@
     .go-stat { background: var(--bg3); border-radius: 6px; padding: 10px; text-align: center; }
     .go-stat-v { font-size: 1.3rem; font-weight: 800; }
     .go-stat-l { font-size: 0.65rem; color: var(--mute); margin-top: 2px; }
+
+    /* ── FLOOD CATASTROPHE MODAL ────────────────────────────── */
+    @keyframes alarm-pulse {
+      0%, 100% { color: #ef4444; text-shadow: 0 0 12px rgba(239,68,68,.9); }
+      50%       { color: #fbbf24; text-shadow: 0 0 20px rgba(251,191,36,.7); opacity: 0.7; }
+    }
+    @keyframes flood-glow {
+      0%, 100% { box-shadow: 0 0 24px rgba(220,38,38,.35), 0 0 60px rgba(220,38,38,.1); border-color: #dc2626; }
+      50%       { box-shadow: 0 0 48px rgba(220,38,38,.7),  0 0 90px rgba(220,38,38,.25); border-color: #f87171; }
+    }
+    @keyframes modal-shake {
+      0%,100% { transform: translateX(0) rotate(0deg); }
+      15%      { transform: translateX(-7px) rotate(-0.5deg); }
+      30%      { transform: translateX(7px)  rotate(0.5deg); }
+      45%      { transform: translateX(-5px) rotate(-0.3deg); }
+      60%      { transform: translateX(5px)  rotate(0.3deg); }
+      75%      { transform: translateX(-2px); }
+    }
+
+    .flood-mbox {
+      background: linear-gradient(155deg, #1c0808 0%, #150d0d 40%, #0f172a 100%);
+      border: 2px solid #dc2626 !important;
+      animation: flood-glow 1.4s ease-in-out infinite, modal-shake 0.55s ease-out 0.05s;
+    }
+    .flood-alarm {
+      font-size: 0.85rem;
+      font-weight: 900;
+      letter-spacing: .2em;
+      text-align: center;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      animation: alarm-pulse 0.75s ease-in-out infinite;
+    }
+    .flood-emoji { font-size: 3.5rem; text-align: center; display: block; margin: 6px 0 10px; }
+    .flood-title {
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: #ef4444;
+      text-align: center;
+      margin-bottom: 6px;
+      line-height: 1.15;
+      text-shadow: 0 0 20px rgba(239,68,68,.5);
+    }
+    .flood-subtitle {
+      text-align: center;
+      font-size: 0.82rem;
+      color: #fca5a5;
+      margin-bottom: 16px;
+    }
+    .flood-score-big {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #f87171;
+      text-align: center;
+      margin: 10px 0 4px;
+    }
+    .flood-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .flood-stat {
+      background: rgba(220,38,38,.12);
+      border: 1px solid rgba(220,38,38,.25);
+      border-radius: 6px;
+      padding: 10px;
+      text-align: center;
+    }
+    .flood-stat-v { font-size: 1.2rem; font-weight: 800; color: #fca5a5; }
+    .flood-stat-l { font-size: 0.62rem; color: #94a3b8; margin-top: 2px; }
+    .flood-mbtn {
+      display: block; width: 100%;
+      padding: 12px;
+      background: #dc2626; color: #fff;
+      border: none; border-radius: 6px;
+      font-size: 0.95rem; font-weight: 700;
+      cursor: pointer;
+      margin-top: 14px;
+    }
+    .flood-mbtn:hover { background: #b91c1c; }
   </style>
 </head>
 <body>
@@ -424,27 +539,75 @@
     <div class="mtitle">Reservoir Manager</div>
     <div class="mbody">
       <p>You are the water resource manager for a reservoir serving a growing city, farms, and a hydroelectric facility. Your job: balance water supply, flood safety, and downstream needs over a full <strong>52-week water year</strong>.</p>
-      <p>Each week you receive <strong>probabilistic forecasts</strong> (95% CI) for both <em>inflow</em> and <em>demand</em>. Decide how much to release — then actuals are revealed and storage updates.</p>
+      <p>Each week you receive <strong>probabilistic forecasts</strong> (95% CI) for both <em>inflow</em> and <em>demand</em>. Decide how much to release — then actuals are revealed and storage updates. Units are abstract (think thousand acre-feet).</p>
 
       <table class="zone-tbl">
-        <tr><th>Zone</th><th>Storage</th><th>Scoring</th></tr>
-        <tr><td style="color:#b45309">Dead Pool</td><td>0 – 100</td><td>Water unreachable by gravity. <strong style="color:#ef4444">−20 pts/wk</strong></td></tr>
-        <tr><td style="color:#60a5fa">Conservation Pool</td><td>100 – 600</td><td>Target zone. <strong style="color:#22c55e">+10 pts/wk</strong> + up to +12 bonus near target (350)</td></tr>
-        <tr><td style="color:#fbbf24">Flood Control Pool</td><td>600 – 850</td><td>Reserved for flood capture. <strong>0 pts/wk</strong></td></tr>
-        <tr><td style="color:#f87171">Surcharge Pool</td><td>850 – 1,000</td><td>Structural risk zone. <strong style="color:#ef4444">−15 pts/wk</strong></td></tr>
+        <tr><th>Zone</th><th>Storage</th><th>Consequence</th></tr>
+        <tr>
+          <td style="color:#b45309">Dead Pool</td>
+          <td>0 – 100</td>
+          <td>Water unreachable by gravity. <strong style="color:#ef4444">−60 pts/wk</strong>; if storage falls below 50, an additional <strong style="color:#ef4444">−30 pts</strong> "critical drought" penalty applies.</td>
+        </tr>
+        <tr>
+          <td style="color:#60a5fa">Conservation Pool</td>
+          <td>100 – 600</td>
+          <td>Target operating zone. <strong style="color:#22c55e">+10 pts/wk</strong> base, plus up to <strong style="color:#22c55e">+12 proximity bonus</strong> for being near the target of 350.</td>
+        </tr>
+        <tr>
+          <td style="color:#fbbf24">Flood Control Pool</td>
+          <td>600 – 850</td>
+          <td>Reserved empty capacity to absorb flood pulses. <strong>0 pts/wk</strong> — not a crisis, but wasted scoring opportunity.</td>
+        </tr>
+        <tr>
+          <td style="color:#f87171">Surcharge Pool</td>
+          <td>850 – 1,000</td>
+          <td><strong style="color:#ef4444">⚠ GAME OVER.</strong> The dam overtops and the downstream city is destroyed. Do not let storage reach this zone.</td>
+        </tr>
       </table>
 
-      <p><strong>Downstream demands</strong> — your release must also cover these each week:</p>
+      <p><strong>Downstream demands</strong> — your weekly release must cover all of these or you incur a shortfall penalty (~−1 pt per 4 units short, minimum −2 pts):</p>
       <table class="zone-tbl">
         <tr><th>Demand</th><th>Season</th><th>Typical range</th></tr>
-        <tr><td style="color:#a78bfa">Urban water supply</td><td>Peaks in summer</td><td>5 – 15 units/wk</td></tr>
-        <tr><td style="color:#4ade80">Agriculture (irrigation)</td><td>Peaks in summer, near zero in winter</td><td>0 – 25 units/wk</td></tr>
-        <tr><td style="color:#fbbf24">Hydroelectric</td><td>Peaks in winter</td><td>2 – 14 units/wk</td></tr>
+        <tr><td style="color:#a78bfa">Urban water supply</td><td>Peaks in summer (wk 30)</td><td>5 – 15 units/wk</td></tr>
+        <tr><td style="color:#4ade80">Agriculture (irrigation)</td><td>Peaks early summer (wk 26), near zero in winter</td><td>0 – 25 units/wk</td></tr>
+        <tr><td style="color:#fbbf24">Hydroelectric</td><td>Peaks in winter (wk 4)</td><td>2 – 14 units/wk</td></tr>
+        <tr><td style="color:#64748b">Environmental flow</td><td>Year-round (fixed)</td><td>15 units/wk</td></tr>
       </table>
-      <p>Release below total demand (+ 15 unit env. flow) incurs a shortfall penalty. You may choose to ration during droughts — but it costs points.</p>
-      <p><strong>Tip:</strong> Build up storage in spring so you have carryover for summer demand. The CI on forecasts is wide — plan for the range, not just the mean.</p>
+      <p>Rationing is sometimes the right call — draining storage to dead pool costs far more than a modest shortfall penalty. But chronic under-delivery is expensive too.</p>
+      <p><strong>Tip:</strong> Build up storage in spring (weeks 14–26) so you have carryover for the summer demand peak. Inflow collapses just as agriculture demand spikes — that squeeze is the hardest part of the game.</p>
     </div>
     <button class="mbtn" id="start-btn">Begin Water Year →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ FLOOD GAME OVER ════════════════ -->
+<div id="flood-gameover" class="overlay hidden">
+  <div class="mbox flood-mbox">
+    <div class="flood-alarm">⚠ &nbsp; CATASTROPHIC FLOOD &nbsp; ⚠</div>
+    <div class="flood-emoji">🌊</div>
+    <div class="flood-title">THE CITY IS DESTROYED</div>
+    <div class="flood-subtitle">Storage surged into the surcharge pool — the dam overtopped and an uncontrolled flood wave devastated the downstream valley. Your tenure as reservoir manager is over.</div>
+    <div class="flood-score-big" id="flood-score">0</div>
+    <div style="text-align:center;font-size:0.78rem;color:#94a3b8;margin-bottom:10px;" id="flood-week">—</div>
+    <div class="flood-stat-grid">
+      <div class="flood-stat">
+        <div class="flood-stat-v" id="flood-storage">—</div>
+        <div class="flood-stat-l">Storage at Failure (units)</div>
+      </div>
+      <div class="flood-stat">
+        <div class="flood-stat-v" id="flood-wks">—</div>
+        <div class="flood-stat-l">Weeks Completed</div>
+      </div>
+      <div class="flood-stat">
+        <div class="flood-stat-v" id="flood-wks-conserve">—</div>
+        <div class="flood-stat-l">Weeks in Conservation Pool</div>
+      </div>
+      <div class="flood-stat">
+        <div class="flood-stat-v" id="flood-shortfall">—</div>
+        <div class="flood-stat-l">Demand Shortfall Weeks</div>
+      </div>
+    </div>
+    <button class="flood-mbtn" id="flood-restart-btn">Try Again →</button>
   </div>
 </div>
 
@@ -502,13 +665,20 @@
         <span id="res-zone-badge"></span>
       </div>
       <div class="res-bar-wrap">
-        <div id="res-bar" style="width:35%"></div>
+        <div id="res-bar" style="width:65%"></div>
+        <div id="res-bar-tick" style="left:35%"></div>
+      </div>
+      <div class="res-zone-row">
+        <div class="zlab" style="left:5%;color:#fb923c">Dead</div>
+        <div class="zlab" style="left:35%;color:#60a5fa">Conservation</div>
+        <div class="zlab" style="left:72.5%;color:#fbbf24">Flood Ctrl</div>
+        <div class="zlab" style="left:92.5%;color:#f87171">Surge</div>
       </div>
       <div class="res-ruler">
-        <div class="zmark" style="left:10%">100</div>
-        <div class="zmark" style="left:35%">350</div>
-        <div class="zmark" style="left:60%">600</div>
-        <div class="zmark" style="left:85%">850</div>
+        <div class="zmark" style="left:10%;color:#b45309">100</div>
+        <div class="zmark" style="left:35%;color:#93c5fd">▾350</div>
+        <div class="zmark" style="left:60%;color:#b45309">600</div>
+        <div class="zmark" style="left:85%;color:#dc2626">850</div>
       </div>
     </div>
   </div>
@@ -541,7 +711,7 @@
     </div>
 
     <div class="hist-card">
-      <div class="hist-card-title">Inflow History — actual (blue) vs forecast (yellow)</div>
+      <div class="hist-card-title">Inflow History — actual (blue) · forecast (yellow) · seasonal mean (grey)</div>
       <canvas id="hist-canvas"></canvas>
     </div>
   </div>
@@ -662,7 +832,7 @@ const DEMAND_COMPS = [
 ];
 
 const ZONES = [
-  { id:'dead',     label:'Dead Pool',          min:0,     max:DPOOL, pts:-20, col:'#7c2d12' },
+  { id:'dead',     label:'Dead Pool',          min:0,     max:DPOOL, pts:-60, col:'#7c2d12' },
   { id:'conserve', label:'Conservation Pool',  min:DPOOL, max:CTOP,  pts: 10, col:'#1e40af' },
   { id:'flood',    label:'Flood Control Pool', min:CTOP,  max:FTOP,  pts:  0, col:'#92400e' },
   { id:'surge',    label:'Surcharge Pool',     min:FTOP,  max:CAP,   pts:-15, col:'#991b1b' },
@@ -777,6 +947,12 @@ function calcScore(stor, release, actualDemandTotal) {
       const label = dist <= 25 ? 'perfect target' : dist <= 75 ? 'near target' : 'target proximity';
       breakdown.push(`${label} +${bonus}`);
     }
+  } else if (zone.id === 'dead') {
+    breakdown.push(`dead pool ${zone.pts}`);
+    if (stor < 50) {
+      pts -= 30;
+      breakdown.push(`critical drought — taps ran dry −30`);
+    }
   } else {
     breakdown.push(`${zone.label} ${zone.pts > 0 ? '+' : ''}${zone.pts}`);
   }
@@ -784,7 +960,8 @@ function calcScore(stor, release, actualDemandTotal) {
   const totalRequired = EFLOW + actualDemandTotal;
   const shortfall = Math.max(0, totalRequired - release);
   if (shortfall > 0) {
-    const sfPts = -Math.max(1, Math.round(shortfall / 8));
+    // ~−1 pt per 4 units short, minimum −2 (units are abstract, ~TAF scale)
+    const sfPts = -Math.max(2, Math.round(shortfall / 4));
     pts += sfPts;
     const who = release < EFLOW ? 'env. flow + demand' : 'demand';
     breakdown.push(`${who} shortfall ${shortfall.toFixed(0)} units ${sfPts}`);
@@ -803,7 +980,7 @@ let waveT = 0, rafId = null;
 function resizeResCanvas() {
   const par = resC.parentElement;
   resC.width  = par.clientWidth - 24;
-  resC.height = par.clientHeight - 105;
+  resC.height = par.clientHeight - 120;
   drawRes();
 }
 
@@ -1216,54 +1393,118 @@ function drawHistory() {
   ctx.fillStyle = '#0f172a';
   ctx.fillRect(0, 0, W, H);
 
-  const actuals = S.actualInflows.slice(-24);
-  const fcs     = S.history.slice(-24).map(h => h.fcMu);
+  const PAD_L = 2, PAD_R = 4;
+  const chartW = W - PAD_L - PAD_R;
+  const toX = wk => PAD_L + ((wk - 1) / (WEEKS - 1)) * chartW;
 
-  if (actuals.length < 2) {
-    ctx.fillStyle = '#475569';
-    ctx.font = '10px system-ui';
-    ctx.textAlign = 'center';
-    ctx.fillText('No history yet', W / 2, H / 2 + 4);
-    return;
+  // Y scale: accommodate full seasonal curve peak (~110)
+  const actuals = S.actualInflows;
+  const histFcs = S.history.map(h => h.fcMu);
+  const maxV = Math.max(125, ...actuals, ...histFcs);
+  const toY  = v => (H - 4) - (v / maxV) * (H - 8);
+
+  // ── Season background shading ──────────────────────────────
+  const seaBands = [
+    { start:1,  end:13,  col:'rgba(147,197,253,.05)' },
+    { start:14, end:26,  col:'rgba(134,239,172,.05)' },
+    { start:27, end:39,  col:'rgba(253,230,138,.06)' },
+    { start:40, end:52,  col:'rgba(253,186,116,.05)' },
+  ];
+  for (const s of seaBands) {
+    const x1 = toX(s.start), x2 = toX(s.end + 1);
+    ctx.fillStyle = s.col;
+    ctx.fillRect(x1, 0, x2 - x1, H - 4);
   }
 
-  const maxV = Math.max(...actuals, ...fcs, 10);
-  const toX  = i => 4 + (i / (actuals.length - 1)) * (W - 8);
-  const toY  = v => H - 4 - (v / maxV) * (H - 8);
+  // ── Season boundary ticks + labels ────────────────────────
+  const seaLabels = [
+    { wk:1,  label:'W' },
+    { wk:14, label:'Sp' },
+    { wk:27, label:'Su' },
+    { wk:40, label:'F' },
+  ];
+  ctx.setLineDash([2, 4]);
+  ctx.strokeStyle = 'rgba(71,85,105,.5)';
+  ctx.lineWidth = 1;
+  for (const s of seaLabels) {
+    const x = toX(s.wk);
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H - 4); ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(100,116,139,.7)';
+  ctx.font = '8px system-ui';
+  ctx.textAlign = 'left';
+  for (const s of seaLabels) {
+    ctx.fillText(s.label, toX(s.wk) + 2, H - 4);
+  }
 
-  // Forecast line (dashed yellow)
+  // ── Seasonal mean curve (background reference) ─────────────
+  ctx.setLineDash([4, 3]);
+  ctx.strokeStyle = 'rgba(148,163,184,.35)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  for (let wk = 1; wk <= WEEKS; wk++) {
+    const x = toX(wk), y = toY(seasonalMean(wk));
+    wk === 1 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // ── Current week marker ────────────────────────────────────
+  if (S.week >= 1) {
+    ctx.strokeStyle = 'rgba(148,163,184,.4)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([1, 3]);
+    const xNow = toX(S.week);
+    ctx.beginPath(); ctx.moveTo(xNow, 0); ctx.lineTo(xNow, H - 4); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // ── No actuals yet — done ─────────────────────────────────
+  if (actuals.length < 2) return;
+
+  // ── Forecast line (dashed yellow) ─────────────────────────
   ctx.setLineDash([2, 3]);
   ctx.strokeStyle = '#f59e0b';
   ctx.lineWidth = 1;
   ctx.beginPath();
-  fcs.forEach((v, i) => { i === 0 ? ctx.moveTo(toX(i), toY(v)) : ctx.lineTo(toX(i), toY(v)); });
+  S.history.forEach((h, i) => {
+    const x = toX(h.week), y = toY(h.fcMu);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // Actual inflow area fill
-  ctx.beginPath();
-  actuals.forEach((v, i) => { i === 0 ? ctx.moveTo(toX(i), toY(v)) : ctx.lineTo(toX(i), toY(v)); });
+  // ── Actual inflow area fill ────────────────────────────────
   const gradH = ctx.createLinearGradient(0, 0, 0, H);
   gradH.addColorStop(0, 'rgba(59,130,246,.5)');
   gradH.addColorStop(1, 'rgba(59,130,246,.05)');
-  ctx.lineTo(toX(actuals.length - 1), H);
-  ctx.lineTo(toX(0), H);
+  ctx.beginPath();
+  actuals.forEach((v, i) => {
+    const x = toX(i + 1), y = toY(v);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.lineTo(toX(actuals.length), H - 4);
+  ctx.lineTo(toX(1), H - 4);
   ctx.closePath();
   ctx.fillStyle = gradH;
   ctx.fill();
 
-  // Actual inflow line
+  // ── Actual inflow line + dots ──────────────────────────────
   ctx.strokeStyle = '#3b82f6';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
-  actuals.forEach((v, i) => { i === 0 ? ctx.moveTo(toX(i), toY(v)) : ctx.lineTo(toX(i), toY(v)); });
+  actuals.forEach((v, i) => {
+    const x = toX(i + 1), y = toY(v);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
   ctx.stroke();
 
-  // Dots
   actuals.forEach((v, i) => {
-    ctx.fillStyle = i === actuals.length - 1 ? '#93c5fd' : '#3b82f6';
+    const isLast = i === actuals.length - 1;
+    ctx.fillStyle = isLast ? '#93c5fd' : '#3b82f6';
     ctx.beginPath();
-    ctx.arc(toX(i), toY(v), i === actuals.length - 1 ? 3 : 2, 0, Math.PI * 2);
+    ctx.arc(toX(i + 1), toY(v), isLast ? 3 : 2, 0, Math.PI * 2);
     ctx.fill();
   });
 }
@@ -1295,11 +1536,10 @@ function updateStorageCard() {
 
   document.getElementById('res-stor-big').textContent = Math.round(s);
 
-  const bar = document.getElementById('res-bar');
-  bar.style.width = pct + '%';
-  bar.style.background = z.id === 'conserve' ? '#2563eb'
-                       : z.id === 'flood'    ? '#d97706'
-                       : z.id === 'dead'     ? '#7c2d12' : '#dc2626';
+  // Dark empty-capacity mask covers the unfilled right portion
+  document.getElementById('res-bar').style.width = (100 - pct) + '%';
+  // White level tick
+  document.getElementById('res-bar-tick').style.left = pct + '%';
 
   const badge = document.getElementById('res-zone-badge');
   badge.textContent = z.label;
@@ -1520,6 +1760,12 @@ function onRelease() {
   updateHeader();
   updateStorageCard();
   drawHistory();
+
+  if (getZone(storA).id === 'surge') {
+    showFloodResult(actual, storA, pts, breakdown);
+    return;
+  }
+
   showResultPhase(actual, storA, pts, breakdown);
 }
 
@@ -1530,6 +1776,45 @@ function onNextWeek() {
   }
   S.week++;
   startWeek();
+}
+
+// ════════════════════════════════════════════════
+// FLOOD GAME OVER
+// ════════════════════════════════════════════════
+function showFloodResult(actual, storAfter, pts, breakdown) {
+  document.getElementById('rel-slider').disabled = true;
+  document.getElementById('action-btn').disabled = true;
+
+  // Show inflow reveal first so player sees what hit them
+  drawInflowForecast(actual);
+
+  setTimeout(() => {
+    const diff = actual - S.fcMu;
+    const sign = diff >= 0 ? '+' : '';
+    const diffCol = diff > 10 ? '#f59e0b' : diff < -10 ? '#86efac' : '#94a3b8';
+    document.getElementById('inflow-actual-val').textContent = actual.toFixed(1);
+    document.getElementById('inflow-actual-cmp').innerHTML =
+      `<span style="color:${diffCol}">${sign}${diff.toFixed(1)}</span> vs forecast mean`;
+    bounceIn(document.getElementById('inflow-reveal'));
+  }, 200);
+
+  // Then slam the flood modal
+  setTimeout(() => showFloodGameOver(storAfter), 1000);
+}
+
+function showFloodGameOver(storAfter) {
+  const sc = S.score;
+  const wksConserve  = S.history.filter(h => getZone(h.storAfter).id === 'conserve').length;
+  const shortfallWks = S.history.filter(h => h.rel < EFLOW + (h.demandTotal || 0)).length;
+
+  document.getElementById('flood-score').textContent = sc;
+  document.getElementById('flood-week').textContent  = `Failed on Week ${S.week} of ${WEEKS}`;
+  document.getElementById('flood-storage').textContent    = Math.round(storAfter || S.storage);
+  document.getElementById('flood-wks').textContent        = S.history.length;
+  document.getElementById('flood-wks-conserve').textContent = wksConserve;
+  document.getElementById('flood-shortfall').textContent  = shortfallWks;
+
+  document.getElementById('flood-gameover').classList.remove('hidden');
 }
 
 // ════════════════════════════════════════════════
@@ -1579,6 +1864,13 @@ document.getElementById('start-btn').addEventListener('click', () => {
 
 document.getElementById('restart-btn').addEventListener('click', () => {
   document.getElementById('gameover').classList.add('hidden');
+  document.getElementById('log-rows').innerHTML = '';
+  resetState();
+  startWeek();
+});
+
+document.getElementById('flood-restart-btn').addEventListener('click', () => {
+  document.getElementById('flood-gameover').classList.add('hidden');
   document.getElementById('log-rows').innerHTML = '';
   resetState();
   startWeek();
